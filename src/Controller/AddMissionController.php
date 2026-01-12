@@ -53,10 +53,10 @@ final class AddMissionController extends AbstractController
             $this->em->flush();
 
             //Redirection
-            return $this->redirectToRoute(
-                'app_mission_create',
-                ['message' => 'Mission créée avec succès ✅']
-            );
+            $this->addFlash('success', 'Mission créée avec succès ✅');
+            return $this->redirectToRoute('app_home');
+        } else {
+            dump($form->getErrors(true, true));
         }
 
         

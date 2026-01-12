@@ -1,0 +1,25 @@
+{% use 'form_div_layout.html.twig' %}
+
+{# 1. Style pour les champs TEXTE, DATE, etc. #}
+{# {% block widget_attributes %}
+    {% set attr = attr|merge({
+        'class': (attr.class|default('') ~ ' w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500')|trim
+    }) %}
+    {{ parent() }}
+{% endblock widget_attributes %} #}
+
+{# 2. Style spécifique pour les DROPDOWNS (select) #}
+{# {% block choice_widget_collapsed %}
+    {% set attr = attr|merge({
+        'class': (attr.class|default('') ~ ' w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white py-2 px-3')|trim
+    }) %}
+    {{ parent() }}
+{% endblock choice_widget_collapsed %} #}
+
+{# Style pour les Checkboxes #}
+{# {% block checkbox_widget %}
+    {% set attr = attr|merge({
+        'class': (attr.class|default('') ~ ' rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500')|trim
+    }) %}
+    {{ parent() }}
+{% endblock checkbox_widget %} #}
