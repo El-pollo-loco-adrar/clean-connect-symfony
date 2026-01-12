@@ -15,6 +15,27 @@
         {% endblock %}
     </head>
     <body>
+        {# --- SECTION FLASH MESSAGES --- #}
+        <div class="fixed top-5 right-5 z-50 flex flex-col gap-3 w-80">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="p-4 rounded-lg shadow-xl border-l-4 animate-bounce 
+                        {% if label == 'success' %}
+                            bg-green-50 border-green-500 text-green-800
+                        {% else %}
+                            bg-red-50 border-red-500 text-red-800
+                        {% endif %}">
+                        <div class="flex items-center justify-between">
+                            <p class="font-medium">{{ message }}</p>
+                            <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-gray-600">×</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        {# ------------------------------ #}
+
+
         {% block body %}
             <div id="app"></div>
         {% endblock %}

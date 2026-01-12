@@ -38,27 +38,31 @@ class AddMissionType extends AbstractType
                 'attr' => [
                     'class' => 'w-full rounded-md border-gray-300 shadow-sm'
                 ]
-            ])
+            ]
+            )
             ->add('description', TextareaType::class, [
                 'label' => 'Description : ',
                 'attr' => [
                     'class' => 'w-full rounded-md border-gray-300 shadow-sm'
                 ]
-            ])
+            ]
+            )
             ->add('startAt', DateTimeType::class, [
                 'widget'=> 'single_text',
                 'label'=> 'Date et heure de début : ',
                 'attr' => [
                     'class' => 'w-full rounded-md border-gray-300 shadow-sm'
                 ]
-            ])
+            ]
+            )
             ->add('endAt', DateTimeType::class, [
                 'widget'=> 'single_text',
                 'label' => 'Date et heure de fin : ',
                 'attr' => [
                     'class' => 'w-full rounded-md border-gray-300 shadow-sm'
                 ]
-            ])
+            ]
+            )
             // ------------------------------------------------
             ->add(
                 $builder->create('areaLocation', TextType::class, [
@@ -91,7 +95,8 @@ class AddMissionType extends AbstractType
                 'attr' => [
                     'class' => 'w-full rounded-md border-gray-300 shadow-sm'
                 ]
-            ])
+            ]
+            )
 
             ->add('submit', SubmitType::class, [
                 'label' => 'Publier la mission',
