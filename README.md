@@ -26,6 +26,15 @@ npm -v
 symfony -v
 ```
 
+## Modifier le fichier C:\xampp\php\ini
+```bash
+Enlever le ";" des lignes suivantes :
+
+extension=pdo_mysql
+extension=intl
+extension=mbstring
+```
+
 ### Installer les dépendances PHP
 ```bash
 composer install
@@ -34,10 +43,22 @@ composer install
 ### Installer les dépendances FRONT
 ```bash
 npm install
+```
 
+### Installer Tailwind
+```bash
+php bin/console tailwind:build    
 ```
 ## Base de données
 
+1️⃣ Créer la bdd
+```bash
+php bin/console doctrine:database:create   
+```
+2️⃣ Lance le fichier migration
+```bash
+php bin/console doctrine:migrations:migrate
+```
 ### Installer fixtures et Faker
 ```bash
 composer require --dev orm-fixtures

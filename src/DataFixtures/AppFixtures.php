@@ -3,12 +3,15 @@
 namespace App\DataFixtures;
 
 use App\Entity\WageScale;
+use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\User;
 use App\Entity\Role;
 use App\Entity\SkillCategory;
 use App\Entity\Skills;
+use App\Entity\Mission;
+use App\Entity\InterventionArea;
 use Faker;
 
 class AppFixtures extends Fixture
@@ -40,8 +43,36 @@ class AppFixtures extends Fixture
                 ->setPhoneNumber($faker->phoneNumber())
                 ->setRole($userRole);
 
-        $users[]= $user;
-        $manager->persist($user);
+            $users[]= $user;
+            $manager->persist($user);
+        }
+
+        //Création des zone d'interventions
+        $areas = [];
+        for($i = 0; $i< 10; $i++){
+            $area = new InterventionArea();
+            $area->setCity($faker->city())
+                ->setPostalCode($faker->postcode());
+            
+                $areas[] = $area;
+                $manager->persist($area);
+        }
+
+        //Création de missions
+        $missions = [];
+        for($i = 0; $i< 100; $i++){
+            $mission = new Mission();
+            $randomArea = $faker->randomElement($areas);
+
+            $mission->setTitle($faker->jobTitle())
+                ->setDescription($faker->sentence(15))
+                ->setStartAt(DateTimeImmutable::createFromMutable($faker->dateTimeBetween('now', '+1 month')))
+                ->setEndAt(DateTimeImmutable::createFromMutable($faker->dateTimeBetween('+1 month', '+2 months')))
+                ->setCreatedAt(DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-6 months', 'now')))
+                ->setAreaLocation($randomArea);
+
+            $missions[]= $mission;
+            $manager->persist($mission);
         }
 
         //Création des skills category
