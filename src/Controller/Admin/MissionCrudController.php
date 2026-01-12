@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Mission;
 use DateTime;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -18,11 +19,18 @@ class MissionCrudController extends AbstractCrudController
         return Mission::class;
     }
 
-    
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setDefaultSort(['created_at' => 'ASC'])
+            ->setPaginatorPageSize(30)
+            ->setDateTimeFormat('dd/MM/yyyy HH:mm');
+    }
     public function configureFields(string $pageName): iterable
     {
         return [
             IdField::new('id'),
+            DateTimeField::new('created_at', 'Date de création'),
             TextField::new('title', 'Titre'),
             TextEditorField::new('description', 'Description de la mission'),
             DateTimeField::new('startAt', 'Début'),
