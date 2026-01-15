@@ -32,13 +32,13 @@ class Candidate
      * @var Collection<int, InterventionArea>
      */
     #[ORM\ManyToMany(targetEntity: InterventionArea::class, inversedBy: 'candidates')]
-    private Collection $intervention_area;
+    private Collection $interventionArea;
 
     public function __construct()
     {
         $this->availabilities = new ArrayCollection();
         $this->skills = new ArrayCollection();
-        $this->intervention_area = new ArrayCollection();
+        $this->interventionArea = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -106,13 +106,13 @@ class Candidate
      */
     public function getInterventionArea(): Collection
     {
-        return $this->intervention_area;
+        return $this->interventionArea;
     }
 
     public function addInterventionArea(InterventionArea $interventionArea): static
     {
-        if (!$this->intervention_area->contains($interventionArea)) {
-            $this->intervention_area->add($interventionArea);
+        if (!$this->interventionArea->contains($interventionArea)) {
+            $this->interventionArea->add($interventionArea);
         }
 
         return $this;
@@ -120,7 +120,7 @@ class Candidate
 
     public function removeInterventionArea(InterventionArea $interventionArea): static
     {
-        $this->intervention_area->removeElement($interventionArea);
+        $this->interventionArea->removeElement($interventionArea);
 
         return $this;
     }

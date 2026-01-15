@@ -19,18 +19,18 @@ class InterventionArea
     private ?string $city = null;
 
     #[ORM\Column(length: 5, unique: true)]
-    private ?string $postal_code = null;
+    private ?string $postalCode = null;
 
     /**
      * @var Collection<int, Candidate>
      */
-    #[ORM\ManyToMany(targetEntity: Candidate::class, mappedBy: 'intervention_area')]
+    #[ORM\ManyToMany(targetEntity: Candidate::class, mappedBy: 'interventionArea')]
     private Collection $candidates;
 
     /**
      * @var Collection<int, Mission>
      */
-    #[ORM\OneToMany(targetEntity: Mission::class, mappedBy: 'area_location')]
+    #[ORM\OneToMany(targetEntity: Mission::class, mappedBy: 'areaLocation')]
     private Collection $missions;
 
     public function __construct()
@@ -58,12 +58,12 @@ class InterventionArea
 
     public function getPostalCode(): ?string
     {
-        return $this->postal_code;
+        return $this->postalCode;
     }
 
-    public function setPostalCode(string $postal_code): static
+    public function setPostalCode(string $postalCode): static
     {
-        $this->postal_code = $postal_code;
+        $this->postalCode = $postalCode;
 
         return $this;
     }
@@ -127,6 +127,6 @@ class InterventionArea
     public function __toString(): string
 {
     // On affiche la ville et le code postal
-    return sprintf('%s (%s)', $this->city, $this->postal_code);
+    return sprintf('%s (%s)', $this->city, $this->postalCode);
 }
 }

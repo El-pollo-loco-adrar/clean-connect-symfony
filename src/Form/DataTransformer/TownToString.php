@@ -27,7 +27,7 @@ class TownToString implements DataTransformerInterface
 
         // 1. On cherche si ça existe déjà
         $area = $this->entityManager->getRepository(InterventionArea::class)->findOneBy([
-            'postal_code' => $cp,
+            'postalCode' => $cp,
             'city' => $city
         ]);
 

@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Repository\MissionRepository;
 use App\Repository\CandidateRepository;
+use App\Repository\EmployerRepository;
 use App\Entity\Mission;
 use App\Entity\SkillCategory;
 use App\Entity\Skills;
@@ -21,20 +22,24 @@ class DashboardController extends AbstractDashboardController
 {
     private MissionRepository $missionRepository;
     private CandidateRepository $candidateRepository;
+    private EmployerRepository $employerRepository;
 
     public function __construct(
         MissionRepository $missionRepository,
-        CandidateRepository $candidateRepository
+        CandidateRepository $candidateRepository,
+        EmployerRepository $employerRepository
     ) {
         $this->missionRepository = $missionRepository;
         $this->candidateRepository = $candidateRepository;
+        $this->employerRepository = $employerRepository;
     }
 
     public function index(): Response
     {
         return $this->render('admin/my_dashboard.html.twig', [
         'count_missions' => $this->missionRepository->count([]),
-        'count_candidates' => $this->candidateRepository->count([])
+        'count_candidates' => $this->candidateRepository->count([]),
+        'count_employers' => $this->employerRepository->count([]),
         ]);
     }
 
@@ -48,11 +53,21 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
 
-        yield MenuItem::section('Utilisateurs');
-        yield MenuItem::linkToCrud('Liste des utilisateurs', 'fas fa-person', User::class);
-
-        yield MenuItem::section('GEstion des missions');
+        yield MenuItem::section('Gestion des missions');
         yield MenuItem::linkToCrud('Gérer les missions', 'fas fa-list', Mission::class);
+
+        yield MenuItem::section('Utilisateurs');
+        //Liste total
+        yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-users', User::class);
+
+        //Liste des candidats
+        yield MenuItem::linkToCrud('Candidats', 'fas fa-user-ninja', User::class)
+        ->setController(CandidateCrudController::class);
+
+        //Liste des employeurs
+        yield MenuItem::linkToCrud('Employeurs', 'fas fa-user-secret', User::class)
+        ->setController(EmployerCrudController::class);
+
 
         yield MenuItem::section('Paramètres Techniques');
         yield MenuItem::linkToCrud('Compétences', 'fas fa-wrench', Skills::class);
