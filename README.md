@@ -55,6 +55,10 @@ php bin/console tailwind:build
 ```bash
 php bin/console doctrine:database:create   
 ```
+2️⃣ Créer fichier de migration
+```bash
+symfony console make:migration
+```
 2️⃣ Lance le fichier migration
 ```bash
 php bin/console doctrine:migrations:migrate
@@ -67,6 +71,11 @@ composer require fakerphp/faker
 
 ```bash
 Modifier le fichier /src/DataFixtures 
+```
+
+Charger le fichier de fixtures et l'envoyer en BDD
+```bash
+symfony console doctrine:fixtures:load ou d :f :l
 ```
 
 ### Changer l'adresse de la bdd

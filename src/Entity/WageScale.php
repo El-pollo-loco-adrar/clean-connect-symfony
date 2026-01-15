@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
 use function PHPUnit\Framework\returnArgument;
 
 #[ORM\Table(
-    name: "wage_scale",
     uniqueConstraints: [
         new ORM\UniqueConstraint(name:'niveau_level_unique', columns: ['niveau', 'level'])
     ]
@@ -36,7 +35,7 @@ class WageScale
     /**
      * @var Collection<int, Mission>
      */
-    #[ORM\OneToMany(targetEntity: Mission::class, mappedBy: 'wage_scale')]
+    #[ORM\OneToMany(targetEntity: Mission::class, mappedBy: 'wageScale')]
     private Collection $mission;
 
     public function __construct()

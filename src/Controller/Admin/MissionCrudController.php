@@ -22,7 +22,7 @@ class MissionCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setDefaultSort(['created_at' => 'ASC'])
+            ->setDefaultSort(['createdAt' => 'ASC'])
             ->setPaginatorPageSize(30)
             ->setDateTimeFormat('dd/MM/yyyy HH:mm');
     }
@@ -30,14 +30,14 @@ class MissionCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id'),
-            DateTimeField::new('created_at', 'Date de création'),
+            DateTimeField::new('createdAt', 'Date de création'),
             TextField::new('title', 'Titre'),
             TextEditorField::new('description', 'Description de la mission'),
             DateTimeField::new('startAt', 'Début'),
             DateTimeField::new('endAt', 'Fin'),
             AssociationField::new('skills', 'Techniques')
                 ->onlyOnDetail(),
-            AssociationField::new('area_location', 'lieu')
+            AssociationField::new('areaLocation', 'lieu')
         ];
     }
     

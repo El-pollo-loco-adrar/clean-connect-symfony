@@ -40,31 +40,31 @@ class Mission
 
     #[ORM\Column]
     #[Assert\GreaterThanOrEqual("today", message: "La date ne peut pas être dans le passé.")]
-    private ?\DateTimeImmutable $start_at = null;
+    private ?\DateTimeImmutable $startAt = null;
 
     #[ORM\Column]
     #[Assert\Expression(
         "this.getEndAt() > this.getStartAt()",
         message: "La date de fin doit être après la date de début."
     )]
-    private ?\DateTimeImmutable $end_at = null;
+    private ?\DateTimeImmutable $endAt = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        if($this->created_at === null){
-            $this->created_at = new \DateTimeImmutable();
+        if($this->createdAt === null){
+            $this->createdAt = new \DateTimeImmutable();
         }
     }
 
-    #[ORM\ManyToOne(inversedBy: 'area_location')]
-    private ?WageScale $wage_scale = null;
+    #[ORM\ManyToOne(inversedBy: 'areaLocation')]
+    private ?WageScale $wageScale = null;
 
     #[ORM\ManyToOne(inversedBy: 'missions')]
-    private ?InterventionArea $area_location = null;
+    private ?InterventionArea $areaLocation = null;
 
     #[ORM\ManyToOne(inversedBy: 'missions')]
     private ?Employer $employer = null;
@@ -109,60 +109,60 @@ class Mission
 
     public function getStartAt(): ?\DateTimeImmutable
     {
-        return $this->start_at;
+        return $this->startAt;
     }
 
-    public function setStartAt(\DateTimeImmutable $start_at): static
+    public function setStartAt(\DateTimeImmutable $startAt): static
     {
-        $this->start_at = $start_at;
+        $this->startAt = $startAt;
 
         return $this;
     }
 
     public function getEndAt(): ?\DateTimeImmutable
     {
-        return $this->end_at;
+        return $this->endAt;
     }
 
-    public function setEndAt(\DateTimeImmutable $end_at): static
+    public function setEndAt(\DateTimeImmutable $endAt): static
     {
-        $this->end_at = $end_at;
+        $this->endAt = $endAt;
 
         return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     public function getWageScale(): ?WageScale
     {
-        return $this->wage_scale;
+        return $this->wageScale;
     }
 
-    public function setWageScale(?WageScale $wage_scale): static
+    public function setWageScale(?WageScale $wageScale): static
     {
-        $this->wage_scale = $wage_scale;
+        $this->wageScale = $wageScale;
 
         return $this;
     }
 
     public function getAreaLocation(): ?InterventionArea
     {
-        return $this->area_location;
+        return $this->areaLocation;
     }
 
-    public function setAreaLocation(?InterventionArea $area_location): static
+    public function setAreaLocation(?InterventionArea $areaLocation): static
     {
-        $this->area_location = $area_location;
+        $this->areaLocation = $areaLocation;
 
         return $this;
     }
