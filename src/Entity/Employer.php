@@ -8,12 +8,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EmployerRepository::class)]
-class Employer
+class Employer extends User
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    //Je supprime les propriétés redondantes héritées de User
+    // #[ORM\Id]
+    // #[ORM\GeneratedValue]
+    // #[ORM\Column]
+    // private ?int $id = null;
 
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $companyName = null;
