@@ -59,6 +59,10 @@ php bin/console doctrine:database:create
 ```bash
 symfony console make:migration
 ```
+Si erreur "sync-metadata-storage command to fix this issue"
+```bash
+symfony console doctrine:migrations:sync-metadata-storage
+```
 2️⃣ Lance le fichier migration
 ```bash
 php bin/console doctrine:migrations:migrate
