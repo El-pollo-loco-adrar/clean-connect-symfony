@@ -19,7 +19,6 @@ final class AddMissionController extends AbstractController
 {
     public function __construct( private EntityManagerInterface $em)
     {
-
     }
 
     #[Route('/create/mission', name: 'app_mission_create', methods:['GET','POST'])]
