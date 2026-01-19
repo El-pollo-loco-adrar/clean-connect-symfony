@@ -51,11 +51,11 @@ php bin/console tailwind:build
 ```
 ## Base de données
 
-1️⃣ Créer la bdd
+1. Créer la bdd
 ```bash
 php bin/console doctrine:database:create   
 ```
-2️⃣ Créer fichier de migration
+2. Créer fichier de migration
 ```bash
 symfony console make:migration
 ```
@@ -63,9 +63,14 @@ Si erreur "sync-metadata-storage command to fix this issue"
 ```bash
 symfony console doctrine:migrations:sync-metadata-storage
 ```
-2️⃣ Lance le fichier migration
+3. Lance le fichier migration
 ```bash
 php bin/console doctrine:migrations:migrate
+```
+4. Créer les rôles dans la table `role`
+```bash
+Insert into `role` (name_role) value ('ROLE_ADMIN');
+insert into `role` (name_role) value ('ROLE_USER');
 ```
 ### Installer fixtures et Faker
 ```bash
@@ -89,12 +94,12 @@ DATABASE_URL="mysql://root:@127.0.0.1:3306/clean-test?serverVersion=8.0.32&chars
 ```
 
 ## ▶️ Lancer le projet en développement
-1️⃣ Lancer le serveur Symfony
+1. Lancer le serveur Symfony
 ```bash
 symfony serve
 ```
 
-2️⃣ Lancer le watcher frontend
+2. Lancer le watcher frontend
 ```bash
 npm run watch
 ```

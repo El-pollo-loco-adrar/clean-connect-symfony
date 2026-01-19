@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modification du profil{% endblock %}
+
+{% block body %}
+<div class="flex items-center justify-center min-h-screen bg-gray-50 py-10">
+    <div class="w-full max-w-md bg-[#F3F4F6] shadow-xl border border-gray-200 rounded-2xl p-8">
+        
+        <h1 class="text-2xl font-bold text-center text-gray-800">Modifier ses informations</h1>
+        <hr class="border-t-2 border-black my-6 mx-auto w-1/2" />
+
+        <div class="col-md-6">
+            {{ form_start(form) }}
+                {{ form_row(form.firstname) }}
+                {{ form_row(form.lastname) }}
+                {{ form_row(form.phoneNumber) }}
+                <button type="submit" class="btn btn-success mt-3">Enregistrer</button>
+            {{ form_end(form) }}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

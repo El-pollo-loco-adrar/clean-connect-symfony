@@ -15,7 +15,7 @@ class CandidateCrudController extends AbstractCrudController
         return Candidate::class;
     }
 
-    public function configureFields(string $pageName): iterable
+/*    public function configureFields(string $pageName): iterable
     {
         return [
             IdField::new('id'),
@@ -24,5 +24,5 @@ class CandidateCrudController extends AbstractCrudController
             TextField::new('phoneNumber', 'Numéro de téléphone'),
         ];
     }
-
+*/
 }
