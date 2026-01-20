@@ -17,6 +17,7 @@ jobs:
       DATABASE_URL: mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0
       # On dit au Runtime de ne surtout pas chercher de fichier .env
       SYMFONY_DOTENV_PATH: /dev/null
+      DEFAULT_URI: http://localhost
 
     services:
       mysql:
