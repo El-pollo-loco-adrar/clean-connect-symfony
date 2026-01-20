@@ -64,7 +64,7 @@ jobs:
         run: |
           php bin/console doctrine:database:create --no-interaction
           php bin/console doctrine:schema:update --force --no-interaction
-          php bin/console doctrine:query:sql "INSERT INTO role (name_role) VALUES ('ROLE_USER')" --no-interaction
+          php bin/console doctrine:fixtures:load --no-interaction
 
       - name: Run Tests
         run: php bin/phpunit
