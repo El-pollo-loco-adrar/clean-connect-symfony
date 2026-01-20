@@ -1,14 +1,22 @@
-name: Symfony CI
+name: Symfony CI/CD
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
 
 jobs:
-  symfony-tests:
+  tests:
     runs-on: ubuntu-latest
+
+    env:
+      APP_ENV: test
+      APP_DEBUG: 0
+      APP_SECRET: 67d3b0c95805e254e4277b902e1c9d82
+      DATABASE_URL: mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0
+      # On dit au Runtime de ne surtout pas chercher de fichier .env
+      SYMFONY_DOTENV_PATH: /dev/null
 
     services:
       mysql:
@@ -21,28 +29,32 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
-        extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
-        coverage: xdebug
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+          coverage: none
 
-    - name: Install Dependencies
-      run: composer install --prefer-dist --no-progress
+      # ON SUPPRIME LE RISQUE : On crée un .env et on neutralise Flex
+      - name: Force Environment
+        run: |
+          echo "APP_ENV=test" > .env
+          echo "APP_SECRET=67d3b0c95805e254e4277b902e1c9d82" >> .env
+          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0" >> .env
+          # On empêche Flex d'exécuter quoi que ce soit pendant l'install
+          composer config allow-plugins.symfony/flex false
 
-    - name: Setup Database and Assets
-      env:
-        DATABASE_URL: mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0
-      run: |
-        php bin/console doctrine:database:create --env=test
-        php bin/console doctrine:schema:update --force --env=test
-        # Si tu utilises Webpack Encore ou AssetMapper :
-        # php bin/console asset-map:compile 
+      - name: Install Dependencies
+        run: composer install --prefer-dist --no-progress --no-scripts
 
-    - name: Run Tests
-      env:
-        DATABASE_URL: mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0
-      run: php bin/phpunit
+      # Maintenant que tout est installé, on réactive ce qu'il faut pour la console
+      - name: Create Database
+        run: |
+          php bin/console doctrine:database:create --no-interaction
+          php bin/console doctrine:schema:update --force --no-interaction
+
+      - name: Run Tests
+        run: php bin/phpunit
