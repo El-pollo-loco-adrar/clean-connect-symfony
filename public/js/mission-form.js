@@ -204,6 +204,15 @@ function initMissionForm(config) {
                 labelField: 'text',
                 searchField: 'text',
                 create: true,
+                render: {
+                    loading: function(data, escape) {
+                        // Ici tu peux mettre un spinner plus petit en HTML
+                        return '<div class="py-2 text-center text-xs text-gray-500 italic">Recherche en cours...</div>';
+                    },
+                    no_results: function(data, escape) {
+                        return '<div class="py-2 text-center text-xs text-red-500">Aucun lieu trouvé</div>';
+                    }
+                },
                 load: (q, c) => {
                     if(!q.length) return c();
                     fetch('/api/cities?q='+encodeURIComponent(q))
