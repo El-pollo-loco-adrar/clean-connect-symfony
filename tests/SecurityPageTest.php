@@ -70,7 +70,7 @@ class SecurityPageTest extends WebTestCase
 
     //     // On suit la redirection pour vérifier la connexion
     //     $client->followRedirect();
-    //te
+    //test
     // }
     
 }
