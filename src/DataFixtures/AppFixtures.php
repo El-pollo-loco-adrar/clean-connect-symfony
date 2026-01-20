@@ -23,12 +23,12 @@ class AppFixtures extends Fixture
         
         //création des rôles
         $adminRole = new Role();
-        $adminRole->setNameRole('admin');
+        $adminRole->setNameRole('ROLE_ADMIN');
         $manager->persist($adminRole);
 
         
         $userRole = new Role();
-        $userRole->setNameRole('user');
+        $userRole->setNameRole('ROLE_USER');
         $manager->persist($userRole);
 
 
