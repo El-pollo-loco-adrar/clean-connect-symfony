@@ -18,6 +18,8 @@ jobs:
       # On dit au Runtime de ne surtout pas chercher de fichier .env
       SYMFONY_DOTENV_PATH: /dev/null
       DEFAULT_URI: http://localhost
+      MESSENGER_TRANSPORT_DSN: doctrine://default
+      MAILER_DSN: null://default
 
     services:
       mysql:
