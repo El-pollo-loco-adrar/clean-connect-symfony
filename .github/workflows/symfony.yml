@@ -50,6 +50,12 @@ jobs:
           # On empêche Flex d'exécuter quoi que ce soit pendant l'install
           composer config allow-plugins.symfony/flex false
 
+      - name: Fake Webpack Manifest
+        run: |
+          mkdir -p public/build
+          echo "{}" > public/build/manifest.json
+          echo '{"entrypoints": {}}' > public/build/entrypoints.json
+
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --no-scripts
 
