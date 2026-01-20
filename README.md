@@ -87,6 +87,21 @@ Charger le fichier de fixtures et l'envoyer en BDD
 symfony console doctrine:fixtures:load ou d :f :l
 ```
 
+### Installer le bundle DAMA pour effacer la bdd test à chaque test
+```bash
+composer require --dev dama/doctrine-test-bundle
+```
+Création de la bdd pour les tests
+```bash
+php bin/console doctrine:database:drop --force --env=test
+php bin/console doctrine:database:create --env=test
+php bin/console doctrine:schema:update --force --env=test
+```
+Lancer les test unitaires
+```bash
+php bin/phpunit
+```
+
 ### Changer l'adresse de la bdd
 ```bash
 Dans le fichier .env

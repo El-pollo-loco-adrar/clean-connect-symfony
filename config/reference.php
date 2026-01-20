@@ -1540,6 +1540,12 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  * @psalm-type SymfonycastsVerifyEmailConfig = array{
  *     lifetime?: int, // The length of time in seconds that a signed URI is valid for after it is created. // Default: 3600
  * }
+ * @psalm-type DamaDoctrineTestConfig = array{
+ *     enable_static_connection?: mixed, // Default: true
+ *     enable_static_meta_data_cache?: bool, // Default: true
+ *     enable_static_query_cache?: bool, // Default: true
+ *     connection_keys?: list<mixed>,
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1614,6 +1620,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         symfonycasts_tailwind?: SymfonycastsTailwindConfig,
  *         twig_component?: TwigComponentConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
+ *         dama_doctrine_test?: DamaDoctrineTestConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
