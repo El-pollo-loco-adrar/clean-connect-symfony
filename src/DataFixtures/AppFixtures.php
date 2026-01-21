@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Employer;
 use App\Entity\WageScale;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -39,9 +40,10 @@ class AppFixtures extends Fixture
         $manager->persist($userRole);
 
         //création d'un user pour les tests
-        $testUser = new User();
+        $testUser = new Employer();
         $testUser->setFirstname('Test')
                 ->setLastname('User')
+                ->setCompanyName('Compagnie de test')
                 ->setEmail('test-ci@test.com')
                 ->setRole($userRole);
         $password = $this->hasher->hashPassword($testUser,'SuperPassWord123');
@@ -55,9 +57,9 @@ class AppFixtures extends Fixture
             $user = new User();
             $user->setFirstname($faker->firstName())
                 ->setLastname($faker->lastName())
-                ->setEmail($faker->email())
+                ->setEmail($faker->unique->email())
                 ->setPassword($faker->password())
-                ->setPhoneNumber($faker->phoneNumber())
+                ->setPhoneNumber($faker->unique->phoneNumber())
                 ->setRole($userRole);
 
             $users[]= $user;
@@ -74,7 +76,7 @@ class AppFixtures extends Fixture
         $areas = [];
         for($i = 0; $i< 10; $i++){
             $area = new InterventionArea();
-            $area->setCity($faker->city())
+            $area->setCity($faker->unique->city())
                 ->setPostalCode($faker->postcode());
             
                 $areas[] = $area;
