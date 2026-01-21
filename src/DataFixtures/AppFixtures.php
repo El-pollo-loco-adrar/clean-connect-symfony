@@ -63,6 +63,12 @@ class AppFixtures extends Fixture
             $users[]= $user;
             $manager->persist($user);
         }
+        //Création d'une zone pour les tests
+        $testArea = new InterventionArea();
+        $testArea->setCity('Toulouse')
+                ->setPostalCode('31500');
+
+        $manager->persist($testArea);
 
         //Création des zone d'interventions
         $areas = [];
