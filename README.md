@@ -93,9 +93,17 @@ composer require --dev dama/doctrine-test-bundle
 ```
 Création de la bdd pour les tests
 ```bash
+# Efface la bdd test
 php bin/console doctrine:database:drop --force --env=test
+
+# Crée la bdd test
 php bin/console doctrine:database:create --env=test
+
+# Met à jour le schéma
 php bin/console doctrine:schema:update --force --env=test
+
+# Charge les fixtures dans la bdd
+php bin/console --env=test doctrine:fixtures:load --no-interaction
 ```
 Lancer les test unitaires
 ```bash
