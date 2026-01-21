@@ -72,35 +72,35 @@ class SecurityPageTest extends WebTestCase
     //     $client->followRedirect();
     // }
 
-    // public function testAddMission(): void
-    // {
+    public function testAddMission(): void
+    {
 
-    //     $client = static::createClient();
+        $client = static::createClient();
 
-    //     //Je récupère les données pour skill et wazgeScale
-    //     $container = static::getContainer();
-    //     $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
-    //     $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
+        //Je récupère les données pour skill et wazgeScale
+        $container = static::getContainer();
+        $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
+        $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
         
-    //     $crawler = $client->request('GET', '/create/mission');
+        $crawler = $client->request('GET', '/create/mission');
 
-    //     $this->assertResponseIsSuccessful();
+        $this->assertResponseIsSuccessful();
 
-    //     // On sélectionne le bouton "Publier la mission" (par son texte)
-    //     $buttonCrawlerNode = $crawler->selectButton('Publier la mission');
+        // On sélectionne le bouton "Publier la mission" (par son texte)
+        $buttonCrawlerNode = $crawler->selectButton('Publier la mission');
 
-    //     // On récupère le formulaire lié à ce bouton
-    //     $form = $buttonCrawlerNode->form([
-    //         'add_mission[title]'=> 'Mission test',
-    //         'add_mission[description]'=> 'Mission test et description pour tester tout ça',
-    //         'add_mission[startAt]'=> '2027-01-22T08:00',
-    //         'add_mission[endAt]'=> '2027-01-22T12:00',
-    //         'add_mission[areaLocation]'=> '31500 - Toulouse',
-    //         'add_mission[wageScale]'=> $wage->getId(),
-    //         'add_mission[skills]'=> [$skill->getId()],
-    //     ]);
-    //     $client->submit($form);
-    //     $this->assertResponseRedirects('/home');
-    // }
+        // On récupère le formulaire lié à ce bouton
+        $form = $buttonCrawlerNode->form([
+            'add_mission[title]'=> 'Mission test',
+            'add_mission[description]'=> 'Mission test et description pour tester tout ça',
+            'add_mission[startAt]'=> '2027-01-22T08:00',
+            'add_mission[endAt]'=> '2027-01-22T12:00',
+            'add_mission[areaLocation]'=> '31500 - Toulouse',
+            'add_mission[wageScale]'=> $wage->getId(),
+            'add_mission[skills]'=> [$skill->getId()],
+        ]);
+        $client->submit($form);
+        $this->assertResponseRedirects('/home');
+    }
     
 }
