@@ -2,6 +2,7 @@
 
 namespace App\Tests;
 
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SecurityPageTest extends WebTestCase
@@ -74,11 +75,16 @@ class SecurityPageTest extends WebTestCase
 
     public function testAddMission(): void
     {
-
         $client = static::createClient();
-
-        //Je récupère les données pour skill et wazgeScale
         $container = static::getContainer();
+        $entityManager = $container->get('doctrine.orm.entity_manager');
+
+        // --- AJOUT POUR LA CONNEXION ---
+        $userRepository = $container->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
+        $client->loginUser($testUser);
+
+        //Je récupère les données pour skill et wageScale
         $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
         $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
         
