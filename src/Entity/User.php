@@ -49,6 +49,7 @@ class User implements \Symfony\Component\Security\Core\User\UserInterface,
     public function getRoles(): array
     {
         $roles = [];
+        
         // On récupère le nom du rôle depuis la table Role
         if ($this->role) {
             $roles[] = $this->role->getNameRole();
@@ -159,6 +160,17 @@ class User implements \Symfony\Component\Security\Core\User\UserInterface,
         $this->phoneNumber = $phoneNumber;
 
         return $this;
+    }
+
+    public function getUserType(): string
+    {
+        if($this instanceof Employer) {
+            return 'employer';
+        }
+        if($this instanceof Candidate) {
+            return 'candidate';
+        }
+        return 'user';
     }
 
     public function getRole(): ?Role

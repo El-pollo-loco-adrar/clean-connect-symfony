@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Employer;
 use App\Entity\Mission;
 use App\Entity\Skills;
 use App\Form\AddMissionType;
@@ -24,7 +25,11 @@ final class AddMissionController extends AbstractController
     #[Route('/create/mission', name: 'app_mission_create', methods:['GET','POST'])]
     public function createMission(Request $request): Response
     {
-
+        //Sécurité de la route
+        if (!$this->getUser() instanceof Employer) {
+            throw $this->createAccessDeniedException('Interdit si vous n\'êtes pas employeur.');
+        }
+        
         //Création de l'objet mission
         $mission = new Mission();
 
