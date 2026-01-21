@@ -54,23 +54,23 @@ class SecurityPageTest extends WebTestCase
         $client->followRedirect();
     }
 
-    // public function testLoginWorks(): void
-    // {
-    //     $client = static::createClient();
-    //     $client->request('GET', '/login');
+    public function testLoginWorks(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/login');
 
-    //     // On remplit le formulaire avec les identifiants créés au test précédent
-    //     $client->submitForm('Se connecter', [
-    //         'email'=> 'test-unitaire@test.com',
-    //         'password'=> 'CorrectPassword123456',
-    //     ]);
+        // On remplit le formulaire avec les identifiants créés au test précédent
+        $client->submitForm('Se connecter', [
+            'email'=> 'test-ci@test.com',
+            'password'=> 'SuperPassWord123',
+        ]);
 
-    //     //  On vérifie que la connexion redirige vers /home
-    //     $this->assertResponseRedirects('/home');
+        //  On vérifie que la connexion redirige vers /home
+        $this->assertResponseRedirects('/home');
 
-    //     // On suit la redirection pour vérifier la connexion
-    //     $client->followRedirect();
-    //test
-    // }
+        // On suit la redirection pour vérifier la connexion
+        $client->followRedirect();
+    
+    }
     
 }

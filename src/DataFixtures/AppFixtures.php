@@ -13,9 +13,16 @@ use App\Entity\Skills;
 use App\Entity\Mission;
 use App\Entity\InterventionArea;
 use Faker;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+    private $hasher;
+
+    public function __construct(UserPasswordHasherInterface $hasher)
+    {
+        $this->hasher = $hasher;
+    }
     public function load(ObjectManager $manager): void
     {
         //Mise en place du faker
@@ -31,6 +38,16 @@ class AppFixtures extends Fixture
         $userRole->setNameRole('ROLE_USER');
         $manager->persist($userRole);
 
+        //création d'un user pour les tests
+        $testUser = new User();
+        $testUser->setFirstname('Test')
+                ->setLastname('User')
+                ->setEmail('test-ci@test.com')
+                ->setRole($userRole);
+        $password = $this->hasher->hashPassword($testUser,'SuperPassWord123');
+        $testUser->setPassword($password);
+
+        $manager->persist($testUser);
 
         //création de user
         $users = [];
