@@ -25,7 +25,7 @@ final class HomeController extends AbstractController
         }
 
         if(in_array('ROLE_ADMIN', $user->getRoles())){
-            return $this->render('/admin');
+            return $this->redirectToRoute('admin');
         }
 
         if($user instanceof Employer) {
@@ -34,7 +34,7 @@ final class HomeController extends AbstractController
             ]);
         }
         if($user instanceof Candidate) {
-            return $this->render('/home/candidate_dashboard.html.twig', [
+            return $this->render('home/candidate_dashboard.html.twig', [
             'candidate'=> $user
             ]);
         }

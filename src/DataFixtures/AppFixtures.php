@@ -34,7 +34,6 @@ class AppFixtures extends Fixture
         $adminRole->setNameRole('ROLE_ADMIN');
         $manager->persist($adminRole);
 
-        
         $userRole = new Role();
         $userRole->setNameRole('ROLE_USER');
         $manager->persist($userRole);
@@ -50,6 +49,18 @@ class AppFixtures extends Fixture
         $testUser->setPassword($password);
 
         $manager->persist($testUser);
+
+        //création d'un ADMIN
+        $admin = new User();
+        $password = $this->hasher->hashPassword($admin,'AdminPassword123');
+        $admin->setFirstname('Super')
+            ->setLastname('Admin')
+            ->setEmail('admin@admin.com')
+            ->setRole($adminRole)
+            ->setIsVerified(true)
+            ->setPassword($password);
+        
+            $manager->persist($admin);
 
         //création de user
         $users = [];
