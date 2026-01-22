@@ -1,0 +1,12 @@
+<a href="{{ path(routeName) }}" class="border-2 border-black bg-[#3B82F6] bg-opacity-15 text-center rounded-xl shadow-lg flex flex-col items-center justify-center p-4 min-h-[140px] gap-2 dark:border-gray-600 dark:bg-gray-700 transition-transform active:scale-95">
+    
+    <div class="flex flex-col items-center gap-2">
+        <div>
+            {% block icon %}{% endblock %}
+        </div>
+        
+        <span class="font-bold text-sm leading-tight px-2 text-gray-800 dark:text-gray-100">
+            {{ label }}
+        </span>
+    </div>
+</a>
