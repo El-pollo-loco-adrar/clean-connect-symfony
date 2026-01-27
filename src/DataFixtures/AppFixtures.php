@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Candidate;
 use App\Entity\Employer;
 use App\Entity\WageScale;
 use DateTimeImmutable;
@@ -38,7 +39,19 @@ class AppFixtures extends Fixture
         $userRole->setNameRole('ROLE_USER');
         $manager->persist($userRole);
 
-        //création d'un user pour les tests
+        //création d'un ADMIN pour les tests
+        $admin = new User();
+        $password = $this->hasher->hashPassword($admin,'AdminPassword123');
+        $admin->setFirstname('Super')
+            ->setLastname('Admin')
+            ->setEmail('admin@admin.com')
+            ->setRole($adminRole)
+            ->setIsVerified(true)
+            ->setPassword($password);
+        
+        $manager->persist($admin);
+
+        //création d'un Employer pour les tests
         $testUser = new Employer();
         $testUser->setFirstname('Test')
                 ->setLastname('User')
@@ -50,17 +63,15 @@ class AppFixtures extends Fixture
 
         $manager->persist($testUser);
 
-        //création d'un ADMIN
-        $admin = new User();
-        $password = $this->hasher->hashPassword($admin,'AdminPassword123');
-        $admin->setFirstname('Super')
-            ->setLastname('Admin')
-            ->setEmail('admin@admin.com')
-            ->setRole($adminRole)
-            ->setIsVerified(true)
-            ->setPassword($password);
-        
-            $manager->persist($admin);
+        //Création d'un Candidate pour les tests
+        $testCandidate = new Candidate();
+        $password = $this->hasher->hashPassword($testCandidate,'SuperPassWord456');
+        $testCandidate->setFirstname('Candidat')
+                    ->setLastname('Test Candidat')
+                    ->setEmail('test-c@test.com')
+                    ->setRole($userRole)
+                    ->setPassword($password);
+        $manager->persist($testCandidate);
 
         //création de user
         $users = [];

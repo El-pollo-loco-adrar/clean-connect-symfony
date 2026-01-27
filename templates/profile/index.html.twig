@@ -1,23 +1,88 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modification du profil{% endblock %}
+{% block title %}Modifier mes informations{% endblock %}
 
 {% block body %}
-<div class="flex items-center justify-center min-h-screen bg-gray-50 py-10">
-    <div class="w-full max-w-md bg-[#F3F4F6] shadow-xl border border-gray-200 rounded-2xl p-8">
+<div class="flex items-center justify-center h-auto dark:bg-gray-900 py-10 transition-colors">
+    <div class="w-full max-w-md mx-4 bg-[#F3F4F6] shadow-xl border border-black dark:border-gray-700 rounded-2xl p-8">
         
-        <h1 class="text-2xl font-bold text-center text-gray-800">Modifier ses informations</h1>
+        <h1 class="text-2xl font-bold text-center text-gray-800">Modifier mes informations</h1>
         <hr class="border-t-2 border-black my-6 mx-auto w-1/2" />
 
-        <div class="col-md-6">
-            {{ form_start(form) }}
-                {{ form_row(form.firstname) }}
-                {{ form_row(form.lastname) }}
-                {{ form_row(form.phoneNumber) }}
-                <button type="submit" class="btn btn-success mt-3">Enregistrer</button>
-            {{ form_end(form) }}
-        </div>
+        {{ form_start(form) }}
+            <div class="space-y-4">
+                <div>
+                {# --- NOM --- #}
+                    <label class="flex items-center justify-center gap-2 w-full font-semibold text-gray-700 mb-2 dark:text-white-200">
+                    Nom
+                    </label>
+                    {{ form_widget(form.lastname, {
+                        'attr': {
+                            'class': 'w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-blue-500'
+                        }
+                    }) }}
+                    <p class="error-message text-red-500 text-xs mt-1 hidden"></p>
+                </div>
 
+                <div>
+                {# --- PRENOM --- #}
+                    <label class="flex items-center justify-center gap-2 w-full font-semibold text-gray-700 mb-2 dark:text-white-200">
+                    Prénom
+                    </label>
+                    {{ form_widget(form.firstname, {
+                        'attr': {
+                            'class': 'w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-blue-500'
+                        }
+                    }) }}
+                </div>
+
+                <div>
+                {# --- NUMERO DE TEL --- #}
+                    <label class="flex items-center justify-center gap-2 w-full font-semibold text-gray-700 mb-2 dark:text-white-200">
+                    Numéro de téléphone
+                    </label>
+                    {{ form_widget(form.phoneNumber, {
+                        'attr': {
+                            'class': 'w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-blue-500'
+                        }
+                    }) }}
+                </div>
+            
+
+                {# --- NOM DE LA SOCIETE COTE EMPLOYER UNIQUEMENT --- #}
+                {% if form.companyName is defined %}
+                <div>
+                    <label class="flex items-center justify-center gap-2 w-full font-semibold text-gray-700 mb-2 dark:text-white-200">
+                    Nom de ma société
+                    </label>
+                    {{ form_widget(form.companyName, {
+                        'attr': {
+                            'class': 'w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-blue-500'
+                        }
+                    }) }}
+                </div>
+                {% endif %}
+
+                {# Bouton submit #}
+                <div class="mt-8 flex justify-center">
+                    <button type="submit" class="bg-[#2563EBCC] w-fit px-6 py-3 text-white border-2 border-black rounded-[4px] font-bold shadow-lg hover:scale-105 transition-transform">Enregistrer</button>
+                </div>
+            </div>
+        {{ form_end(form) }}
     </div>
 </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    {# public/js #}
+    <script src="{{ asset('js/profile-validation.js') }}"></script>
+    <script>
+        // initialise les ID de symfony
+        initProfileValidation({
+            lastnameId: "{{ form.lastname.vars.id }}",
+            firstnameId: "{{ form.firstname.vars.id }}",
+            phoneId: "{{ form.phoneNumber.vars.id }}",
+            companyNameId: "{{ form.companyName is defined ? form.companyName.vars.id : null }}",
+        });
+    </script>
 {% endblock %}

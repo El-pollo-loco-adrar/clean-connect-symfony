@@ -1,0 +1,102 @@
+<nav class="bg-[#F3F4F6] shadow-sm border-b-2 border-black relative">
+    <div class="flex items-center justify-between max-w-screen-xl mx-auto px-4 py-4">
+
+        {# Espaceur gauche #}
+        <div class="flex-1 lg:block hidden"></div> {# Vide sur PC car on centre le logo #}
+        <div class="flex-1 lg:hidden"></div>{# Vide sur Mobile #}
+
+        {# LOGO (Toujours au milieu) #}
+        <div class="flex-none">
+            <a href="{{ path('app_home') }}" class="flex items-center">
+                <img src="{{ asset('img/logo.png') }}" alt="Logo clean connect" class="h-20 lg:h-24">
+            </a>
+        </div>
+
+        {# ZONE DROITE (Burger sur mobile, Déconnexion sur PC) #}
+        <div class="flex-1 flex justify-end items-center">
+            {% if app.user and (app.user.userType == 'employer' or 'candidate') %}
+                {# BOUTON BURGER (Mobile uniquement) #}
+                <button id="burger-btn" class="lg:hidden btn btn-ghost btn-square focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-10 w-10 text-black">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+
+                {# Petit rappel utilisateur sur PC #}
+                <div class="hidden lg:flex items-center gap-2 text-sm font-bold border-l-2 border-black pl-4">
+                    <span>{{ app.user.firstname }}</span>
+                    <a href="{{ path('app_logout') }}" class="text-red-600 hover:text-red-800">🚪Déconnexion</a>
+                </div>
+            {% elseif not app.user %}
+                
+            {% endif %}
+        </div>
+    </div>
+
+    {# --- EMPLOYER : PARTIE BASSE : BARRE DE LIENS (PC UNIQUEMENT) --- #}
+    {% if app.user and app.user.userType == 'employer' %}
+        <div class="hidden lg:flex border-t border-gray-300 justify-center bg-[#F3F4F6] py-3">
+            <ul class="flex gap-8 text-sm font-bold uppercase tracking-widest text-gray-700">
+                <li><a href="{{ path('app_home') }}" class="hover:text-blue-600 transition-colors">Accueil</a></li>
+                <li><a href="{{ path('app_profile_complete') }}" class="hover:text-blue-600 transition-colors">Mes informations</a></li>
+                <li><a href="#" class="hover:text-blue-600 transition-colors">Documents</a></li>
+                <li><a href="#" class="hover:text-blue-600 transition-colors">Historique des missions</a></li>
+                <li><a href="#" class="hover:text-blue-600 transition-colors">Mes achats</a></li>
+                <li><a href="#" class="hover:text-blue-600 transition-colors">Contact support</a></li>
+            </ul>
+        </div>
+    {% endif %}
+
+    {# --- CANDIDAT : PARTIE BASSE : BARRE DE LIENS (PC UNIQUEMENT) --- #}
+    {% if app.user and app.user.userType == 'candidate' %}
+        <div class="hidden lg:flex border-t border-gray-300 justify-center bg-white/50 py-3">
+            <ul class="flex gap-8 text-sm font-bold uppercase tracking-widest text-gray-700">
+                <li><a href="{{ path('app_home') }}" class="hover:text-blue-600 transition-colors">Accueil</a></li>
+                <li><a href="{{ path('app_profile_complete') }}" class="hover:text-blue-600 transition-colors">Mes informations</a></li>
+                <li><a href="#" class="hover:text-blue-600 transition-colors">Mes compétences</a></li>
+                <li><a href="#" class="hover:text-blue-600 transition-colors">Ma zone de déplacement</a></li>
+                <li><a href="#" class="hover:text-blue-600 transition-colors">Mes disponibilités</a></li>
+                <li><a href="#" class="hover:text-blue-600 transition-colors">Historique des missions</a></li>
+                <li><a href="#" class="hover:text-blue-600 transition-colors">Contact support</a></li>
+            </ul>
+        </div>
+    {% endif %}
+
+    {# --- EMPLOYER : MENU MOBILE OVERLAY --- #}
+    {% if app.user and app.user.userType == 'employer' %}
+        <div id="burger-menu" class="hidden lg:hidden absolute top-full left-[10%] w-[80%] bg-[#F3F4F6] bg-opacity-98 z-[100] border-2 border-black rounded-lg shadow-2xl mt-2">
+            <ul class="space-y-4 py-8 w-full text-xl font-bold text-black px-6 text-center">
+                <div class="bg-gray-100 p-4 border-b border-black rounded-t-lg mb-4">
+                    <p>{{ app.user.firstname }} {{ app.user.lastname }}</p>
+                </div>
+                <a href="{{ path('app_home')}}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Accueil</li></a>
+                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Mes informations</li></a>
+                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Documents entreprise</li></a>
+                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Historique des missions</li></a>
+                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Contact support</li></a>
+
+                <a href="{{ path('app_logout') }}" class="block w-full"><li class="p-4 bg-red-100 border-2 border-red-500 text-red-600 rounded-lg shadow-xl">Déconnexion</li></a>
+            </ul>
+        </div>
+    {% endif %}
+
+    {# --- CANDIDAT : MENU MOBILE OVERLAY --- #}
+    {% if app.user and app.user.userType == 'candidate' %}
+        <div id="burger-menu" class="hidden lg:hidden absolute top-full left-[10%] w-[80%] bg-[#F3F4F6] bg-opacity-98 z-[100] border-2 border-black rounded-lg shadow-2xl mt-2">
+            <ul class="space-y-4 py-8 w-full text-xl font-bold text-black px-6 text-center">
+                <div class="bg-gray-100 p-4 border-b border-black rounded-t-lg mb-4">
+                    <p>{{ app.user.firstname }} {{ app.user.lastname }}</p>
+                </div>
+                <a href="{{ path('app_home')}}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Accueil</li></a>
+                <a href="{{ path('app_profile_complete') }}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Mes informations</li></a>
+                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Mes compétences</li></a>
+                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Ma zone de déplacement</li></a>
+                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Mes disponibilités</li></a>
+                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Historique des missions</li></a>
+                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Contact support</li></a>
+
+                <a href="{{ path('app_logout') }}" class="block w-full"><li class="p-4 bg-red-100 border-2 border-red-500 text-red-600 rounded-lg shadow-xl">Déconnexion</li></a>
+            </ul>
+        </div>
+    {% endif %}
+</nav>
