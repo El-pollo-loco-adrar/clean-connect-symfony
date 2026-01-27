@@ -3,7 +3,7 @@
 {% block title %}Inscription{% endblock %}
 
 {% block body %}
-<div class="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 py-10 transition-colors">
+<div class="flex justify-center dark:bg-gray-900 py-10 transition-colors">
     <div class="w-full max-w-md mx-4 bg-[#F3F4F6] shadow-xl border border-black dark:border-gray-700 rounded-2xl p-8">
 
         {# ---LOGO--- #}
@@ -12,11 +12,9 @@
         </div>
 
         {# ---TITRE--- #}
-        <div class="flex justify-center border-2 border-black bg-[#3B82F6] bg-opacity-15 dark:border-gray-600 dark:bg-gray-700 rounded-lg p-2">
+        <div class="flex justify-center border-2 border-black bg-[#3B82F6] bg-opacity-15 dark:border-gray-600 dark:bg-gray-700 rounded-lg p-2 mb-12">
             <h1 class="text-3xl font-semibold dark:text-white ">Inscription</h1>
         </div>
-
-        <hr class="border-t-2 border-black my-6 mx-auto w-1/2" />
 
         {% for flash_error in app.flashes('verify_email_error') %}
         <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm" role="alert">

@@ -15,6 +15,9 @@
         {% endblock %}
     </head>
     <body>
+        {# --- INSERTION DU COMPOSANT NAVBAR --- #}
+        {% include "components/_navbar.html.twig" %}
+        
         {# --- SECTION FLASH MESSAGES --- #}
         <div class="fixed top-5 right-5 z-50 flex flex-col gap-3 w-80">
             {% for label, messages in app.flashes %}
@@ -44,5 +47,28 @@
             {{ encore_entry_script_tags('app') }} {#JS GLOBAL#}
             {% block page_scripts%}{% endblock %}{#JS Spécifique à chaque page#}
         {% endblock %}
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const btn = document.getElementById('burger-btn');
+                const menu = document.getElementById('burger-menu');
+
+                if (btn && menu) {
+                    // Ouvrir / Fermer au clic sur le burger
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Empêche l'événement de monter au document
+                        menu.classList.toggle('hidden');
+                    });
+
+                    // Fermer si on clique n'importe où ailleurs sur la page
+                    document.addEventListener('click', (e) => {
+                        // Si le clic n'est ni sur le menu, ni sur le bouton
+                        if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                            menu.classList.add('hidden');
+                        }
+                    });
+                }
+            });
+        </script>
     </body>
 </html>

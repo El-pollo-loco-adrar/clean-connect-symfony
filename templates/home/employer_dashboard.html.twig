@@ -3,12 +3,12 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-<div class="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 py-10 transition-colors">
+<div class="flex pt-12 justify-center h-auto dark:bg-gray-900  transition-colors">
     <div class="w-full max-w-md mx-4 bg-[#F3F4F6] shadow-xl border border-black dark:border-gray-700 rounded-2xl p-8">
 
         <div class="mt-8 flex flex-col items-center">
             <h1 class="text-2xl font-bold text-center text-gray-800">Bienvenue</h1>
-            <span class="text-center text-gray-800">{{ app.user.lastname}} {{ app.user.firstname }}</span>
+            <span class="text-center text-gray-800">{{ app.user.firstname}} {{ app.user.lastname }}</span>
         </div>
 
         <div class="grid grid-cols1 min-[398px]:grid-cols-2 gap-6 m-12">
@@ -51,7 +51,6 @@
 
         </div>
 
-        <a href="{{ path('app_logout') }}">Se déconnecter</a>
     </div>
 </div>
 {% endblock %}
