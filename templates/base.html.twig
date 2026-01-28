@@ -43,6 +43,9 @@
             <div id="app"></div>
         {% endblock %}
 
+        {# --- INSERTION DU FOOTER --- #}
+        {% include "components/_footer.html.twig" %}
+
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }} {#JS GLOBAL#}
             {% block page_scripts%}{% endblock %}{#JS Spécifique à chaque page#}

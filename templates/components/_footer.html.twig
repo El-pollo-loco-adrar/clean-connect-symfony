@@ -1,0 +1,39 @@
+<footer class="bg-[#3B82F6] bg-opacity-15 border-t-2 border-black mt-12 py-10">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+            
+            <div class="text-center md:text-left">
+                <a href="{{ path('app_home') }}" class="text-2xl font-bold text-gray-900">
+                    Clean<span class="text-blue-600">Connect</span>
+                </a>
+                <p class="mt-2 text-sm text-gray-600 max-w-xs">
+                    Trouvez l'opportunité qui vous correspond ou recrutez vos futurs talents.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-6 text-sm font-medium text-gray-700">
+                <a href="#" class="hover:text-blue-600 transition-colors">Offres d'emploi</a>
+                <a href="#" class="hover:text-blue-600 transition-colors">Entreprises</a>
+                <a href="#" class="hover:text-blue-600 transition-colors">Contact</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <span class="text-xs text-gray-500 uppercase font-bold tracking-widest">Suivez-nous</span>
+                </div>
+        </div>
+
+        <div class="mt-10 pt-6 border-t border-black border-opacity-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex flex-wrap justify-center gap-4 md:gap-6 text-xs text-gray-500 font-medium">
+                    <a href="{{ path('app_mentions_legales')}}" class="hover:text-black transition-colors">Mentions Légales</a>
+                    <a href="{{ path('app_politique_confidentialite')}}" class="hover:text-black transition-colors">CGU</a>
+                    <a href="{{ path('app_cgu')}}" class="hover:text-black transition-colors">Politique de Confidentialité</a>
+                </div>
+
+                <p class="text-sm text-gray-500">
+                    &copy; {{ "now"|date("Y") }} CleanConnect. Tous droits réservés.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
