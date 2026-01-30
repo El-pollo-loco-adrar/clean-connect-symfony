@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260126101901 extends AbstractMigration
+final class Version20260128152011 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -26,7 +26,7 @@ final class Version20260126101901 extends AbstractMigration
         $this->addSql('CREATE TABLE candidate_intervention_area (candidate_id INT NOT NULL, intervention_area_id INT NOT NULL, INDEX IDX_3FB3CD6791BD8781 (candidate_id), INDEX IDX_3FB3CD67F6E134F9 (intervention_area_id), PRIMARY KEY(candidate_id, intervention_area_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE day (id INT AUTO_INCREMENT NOT NULL, day VARCHAR(20) NOT NULL, UNIQUE INDEX UNIQ_E5A02990E5A02990 (day), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE employer (id INT NOT NULL, company_name VARCHAR(100) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE intervention_area (id INT AUTO_INCREMENT NOT NULL, city VARCHAR(100) NOT NULL, postal_code VARCHAR(5) NOT NULL, UNIQUE INDEX UNIQ_D82B25AA2D5B0234 (city), UNIQUE INDEX UNIQ_D82B25AAEA98E376 (postal_code), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE intervention_area (id INT AUTO_INCREMENT NOT NULL, city VARCHAR(100) NOT NULL, postal_code VARCHAR(5) NOT NULL, UNIQUE INDEX unique_city_cp (city, postal_code), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE message (id INT AUTO_INCREMENT NOT NULL, author_id INT NOT NULL, recipent_id INT NOT NULL, content LONGTEXT NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_B6BD307FF675F31B (author_id), INDEX IDX_B6BD307FBF433F1C (recipent_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE mission (id INT AUTO_INCREMENT NOT NULL, wage_scale_id INT DEFAULT NULL, area_location_id INT DEFAULT NULL, employer_id INT DEFAULT NULL, title VARCHAR(100) NOT NULL, description LONGTEXT NOT NULL, start_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', end_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_9067F23CADD43BA (wage_scale_id), INDEX IDX_9067F23C2D768BFE (area_location_id), INDEX IDX_9067F23C41CD9E7A (employer_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE mission_skills (mission_id INT NOT NULL, skills_id INT NOT NULL, INDEX IDX_8DC9CC3EBE6CAE90 (mission_id), INDEX IDX_8DC9CC3E7FF61858 (skills_id), PRIMARY KEY(mission_id, skills_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');

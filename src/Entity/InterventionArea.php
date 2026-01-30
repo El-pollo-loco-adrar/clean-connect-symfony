@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InterventionAreaRepository::class)]
+#[ORM\Table(name: 'intervention_area')]
+#[ORM\UniqueConstraint(name: 'unique_city_cp', columns: ['city', 'postal_code'])] 
 class InterventionArea
 {
     #[ORM\Id]
@@ -15,10 +17,10 @@ class InterventionArea
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100, unique: true)]
+    #[ORM\Column(length: 100)]
     private ?string $city = null;
 
-    #[ORM\Column(length: 5, unique: true)]
+    #[ORM\Column(length: 5)]
     private ?string $postalCode = null;
 
     /**

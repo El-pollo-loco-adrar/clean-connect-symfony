@@ -53,12 +53,37 @@ final class AddMissionController extends AbstractController
         //Vérifier qu'on reçoit un formulaire + vérifier qu'il est valide
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $mission = $form->getData();
+
+            // Sécurité anti-doublon : on récupère l'area envoyée par le formulaire
+            $area = $mission->getAreaLocation();
+
+            if ($area) {
+                // On vérifie si cette ville + CP existe déjà vraiment en BDD
+                $existingArea = $this->em->getRepository(\App\Entity\InterventionArea::class)->findOneBy([
+                    'city' => $area->getCity(),
+                    'postalCode' => $area->getPostalCode()
+                ]);
+
+                if ($existingArea) {
+                    // Si elle existe, on remplace l'objet actuel par celui de la BDD
+                    // Cela empêche Doctrine de vouloir faire un "INSERT"
+                    $mission->setAreaLocation($existingArea);
+                } else {
+                    // Si elle n'existe vraiment pas, on dit à Doctrine de la créer
+                    $this->em->persist($area);
+                }
+            }
+
+            //Je récupère l'ID de l'auteur de la mission
+            $mission->setEmployer($this->getUser());
+
             $this->em->persist($mission);
             $this->em->flush();
 
             //Redirection
             $this->addFlash('success', 'Mission créée avec succès ✅');
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_show_mission');
         } else {
             dump($form->getErrors(true, true));
         }
@@ -78,5 +103,18 @@ final class AddMissionController extends AbstractController
             'skills' => $skillsArray,
             'categories' => $categories,
         ]);
+    }
+
+    #[Route('/mission/delete/{id}', name: 'app_mission_delete', methods: ['POST'])]
+    public function delete(Request $request, Mission $mission, EntityManagerInterface $em): Response
+    {
+        // Vérification de sécurité CSRF
+        if ($this->isCsrfTokenValid('delete'.$mission->getId(), $request->request->get('_token'))) {
+            $em->remove($mission);
+            $em->flush();
+            $this->addFlash('success', 'Mission supprimée avec succès.');
+        }
+
+        return $this->redirectToRoute('app_show_mission');
     }
 }

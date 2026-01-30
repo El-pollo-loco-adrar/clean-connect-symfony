@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Missions - CleanConnect{% endblock %}
+
+{% block body %}
+<div class="flex items-center justify-center h-auto dark:bg-gray-900 py-10 transition-colors">
+    <div class="w-full max-w-md mx-4 bg-[#F3F4F6] shadow-xl border border-black dark:border-gray-700 rounded-2xl p-8">
+        
+        <h1 class="text-2xl font-bold text-center text-gray-800">Mes missions publiées</h1>
+        <hr class="border-t-2 border-black my-6 mx-auto w-1/2"  />
+
+        {% if missions is empty %}
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                <p class="text-blue-700">Vous n'avez pas encore publié de mission.</p>
+                <a href="{{ path('app_mission_create') }}" class="mt-2 inline-block font-bold underline">Créer ma première mission</a>
+            </div>
+
+        {% else %}
+        
+            <div class="grid grid-cols-1 min-[398px]:grid-cols-2 gap-6 m-12">
+                {% for mission in missions %}
+                    {% embed "components/_dashboard_card.html.twig" with {
+                        'routeName': 'app_home',
+                        'label': mission.title
+                    } %}
+                        {% block icon %}
+                            
+                            <div class="flex flex-col items-center gap-1 mb-2">
+                                {# Date #}
+                                <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Date de début:</span>
+                                <span class="text-sm font-bold">{{ mission.startAt|date('d/m/Y') }}</span>
+                                
+                                {# Localisation #}
+                                <span class="text-[10px] mt-4 font-black uppercase tracking-widest text-gray-400">Lieu:</span>
+                                <span class="text-sm font-bold">{{ mission.areaLocation }}</span>
+                                
+                                {# Séparateur visuel pour détacher le titre qui arrive juste en dessous #}
+                                <hr class="w-12 border-black border-t-2 my-1">
+
+                                {# --- BOUTON SUPPRIMER --- #}
+                                <form method="post" action="{{ path('app_mission_delete', {'id': mission.id}) }}" 
+                                    onsubmit="return confirm('Es-tu sûr de vouloir supprimer cette mission ? Cette action est irréversible.');"
+                                    class="mt-2">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ mission.id) }}">
+                                    <button class="text-red-500 hover:text-red-700 transition-colors">
+                                        
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-1.123a2.25 2.25 0 0 0-2.25-2.25h-4.5a2.25 2.25 0 0 0-2.25 2.25v1.123m10.667 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165" />
+                                        </svg>
+                                    </button>
+                                </form>
+
+                            </div>
+                        {% endblock %}
+                    {% endembed %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

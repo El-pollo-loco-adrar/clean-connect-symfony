@@ -27,7 +27,7 @@
                     <span>{{ app.user.firstname }}</span>
                     <a href="{{ path('app_logout') }}" class="text-red-600 hover:text-red-800">🚪Déconnexion</a>
                 </div>
-            {# {% elseif not app.user %} #}
+            
             {% else %}
                 {# User non connecté #}
                 <a href="#" title="Informations" class="text-gray-700 hover:text-blue-600 transition-colors">
@@ -41,7 +41,7 @@
 
     {# --- EMPLOYER : PARTIE BASSE : BARRE DE LIENS (PC UNIQUEMENT) --- #}
     {% if app.user and app.user.userType == 'employer' %}
-        <div class="hidden lg:flex border-t border-gray-300 justify-center bg-[#F3F4F6] py-3">
+        <div class="hidden lg:flex justify-center bg-[#F3F4F6] py-3">
             <ul class="flex gap-8 text-sm font-bold uppercase tracking-widest text-gray-700">
                 <li><a href="{{ path('app_home') }}" class="hover:text-blue-600 transition-colors">Accueil</a></li>
                 <li><a href="{{ path('app_profile_complete') }}" class="hover:text-blue-600 transition-colors">Mes informations</a></li>
@@ -55,7 +55,7 @@
 
     {# --- CANDIDAT : PARTIE BASSE : BARRE DE LIENS (PC UNIQUEMENT) --- #}
     {% if app.user and app.user.userType == 'candidate' %}
-        <div class="hidden lg:flex border-t border-gray-300 justify-center bg-white/50 py-3">
+        <div class="hidden lg:flex justify-center bg-white/50 py-3">
             <ul class="flex gap-8 text-sm font-bold uppercase tracking-widest text-gray-700">
                 <li><a href="{{ path('app_home') }}" class="hover:text-blue-600 transition-colors">Accueil</a></li>
                 <li><a href="{{ path('app_profile_complete') }}" class="hover:text-blue-600 transition-colors">Mes informations</a></li>
