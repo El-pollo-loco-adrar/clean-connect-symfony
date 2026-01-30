@@ -13,8 +13,14 @@
 
         <div class="grid grid-cols1 min-[398px]:grid-cols-2 gap-6 m-12">
 
+        {# J'utilise le composant dashboard_card pour faire les cards carrés
+        /components/_dashboard_card.html.twig#}
+
             {# Créer mission #}
-            {% embed "components/_dashboard_card.html.twig" with { 'routeName': 'app_mission_create', 'label': 'Créer une mission'} %}
+            {% embed "components/_dashboard_card.html.twig" with { 
+                'routeName': 'app_mission_create',
+                'label': 'Créer une mission'} 
+            %}
                 {% block icon %}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-10">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
@@ -23,7 +29,7 @@
             {% endembed %}
 
             {# Mes missions #}
-            {% embed "components/_dashboard_card.html.twig" with { 'routeName': 'app_mission_create', 'label': 'Mes missions'} %}
+            {% embed "components/_dashboard_card.html.twig" with { 'routeName': 'app_show_mission', 'label': 'Mes missions'} %}
                 {% block icon %}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-10">
                         <path d="M19.5 21a3 3 0 0 0 3-3v-4.5a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3V18a3 3 0 0 0 3 3h15ZM1.5 10.146V6a3 3 0 0 1 3-3h5.379a2.25 2.25 0 0 1 1.59.659l2.122 2.121c.14.141.331.22.53.22H19.5a3 3 0 0 1 3 3v1.146A4.483 4.483 0 0 0 19.5 9h-15a4.483 4.483 0 0 0-3 1.146Z" />

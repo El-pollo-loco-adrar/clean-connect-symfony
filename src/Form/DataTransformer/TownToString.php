@@ -23,7 +23,7 @@ class TownToString implements DataTransformerInterface
         // On sépare "31000 - Toulouse"
         $parts = explode(' - ', $value);
         $cp = trim($parts[0]);
-        $city = isset($parts[1]) ? trim($parts[1]) : '';
+        $city = isset($parts[1]) ? mb_convert_case(trim($parts[1]), MB_CASE_TITLE, "UTF-8") : 'Ville inconnue';
 
         // 1. On cherche si ça existe déjà
         $area = $this->entityManager->getRepository(InterventionArea::class)->findOneBy([
