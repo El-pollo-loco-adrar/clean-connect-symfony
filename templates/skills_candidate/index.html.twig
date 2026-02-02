@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes compétences{% endblock %}
+
+{% block body %}
+<div class="flex items-center justify-center h-auto dark:bg-gray-900 py-10 transition-colors">
+    <div class="w-full max-w-md mx-4 bg-[#F3F4F6] shadow-xl border border-black dark:border-gray-700 rounded-2xl p-8">
+        
+        <h1 class="text-2xl font-bold text-center text-gray-800">Gérer mes compétences</h1>
+        <hr class="border-t-2 border-black my-6 mx-auto w-1/2"  />
+
+        {{ form_start(form) }}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {% for category, skills in form.skills.vars.choices %}
+                    <div class="border border-gray-200 dark:border-gray-700 p-4 rounded-xl mb-4">
+                        <h3 class="font-semibold uppercase tracking-widest text-sm mb-4">
+                            {{ category }}
+                        </h3>
+                        <div class="flex flex-col gap-3">
+                            {# On boucle sur les lignes du formulaire qui correspondent à cette catégorie #}
+                            {% for skill in form.skills %}
+                                {% if skill.vars.label in skills|map(s => s.label) %}
+                                    <label class="flex items-center gap-3 cursor-pointer group">
+                                        {{ form_widget(skill, {'attr': {'class': 'w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500'}}) }}
+                                        <span class="text-gray-700 dark:text-gray-300 group-hover:text-blue-500 transition-colors">
+                                            {{ skill.vars.label }}
+                                        </span>
+                                    </label>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="mt-8 flex justify-center">
+                <button type="submit" class="bg-[#2563EBCC] w-fit px-6 py-3 text-white border-2 border-black rounded-[4px] font-bold shadow-lg hover:scale-105 transition-transform">Enregistrer mes compétences</button>
+            </div>
+            
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
