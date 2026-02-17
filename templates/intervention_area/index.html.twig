@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes zones de déplacement{% endblock %}
+
+{% block body %}
+<div class="flex items-center justify-center min-h-screen py-10 bg-gray-50 dark:bg-gray-900">
+    <div class="w-full max-w-2xl p-8 bg-white border border-gray-200 shadow-xl rounded-2xl dark:bg-gray-800 dark:border-gray-700">
+        
+        <h1 class="text-2xl font-bold text-center text-gray-800 dark:text-white">Mes zones de déplacement</h1>
+        <p class="text-sm text-center text-gray-500 mb-6 italic">Saisissez une ville ou un code postal (ex: 31000 ou Toulouse).</p>
+        
+        <hr class="my-6 border-gray-200 dark:border-gray-700" />
+
+        {{ form_start(form) }}
+            <div id="area-wrapper" 
+                data-prototype="{{ form_widget(form.interventionArea.vars.prototype)|e('html_attr') }}"
+                data-index="{{ form.interventionArea|length }}"
+                class="space-y-4">
+                
+                {% for areaField in form.interventionArea %}
+                    <div class="area-row relative flex items-start gap-2 animate-fade-in">
+                        <div class="flex-1">
+                            {{ form_widget(areaField) }}
+                            {{ form_errors(areaField) }}
+                        </div>
+                        <button type="button" class="remove-area mt-2 p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-6 flex flex-col gap-4">
+                <button type="button" id="add-area" class="w-full py-3 border-2 border-dashed border-blue-400 text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all">
+                    + Ajouter une zone de déplacement
+                </button>
+
+                <div class="flex justify-center mt-4 border-t pt-6 border-gray-100">
+                    <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transform hover:scale-105 transition-all">
+                        Enregistrer mes zones
+                    </button>
+                </div>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<style>
+    /* Style pour la liste de suggestions */
+    .autocomplete-suggestions {
+        position: absolute;
+        z-index: 50;
+        width: 100%;
+        background: white;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        margin-top: 0.25rem;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+    .suggestion-item {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+    }
+    .suggestion-item:hover {
+        background-color: #f3f4f6;
+        color: #2563eb;
+    }
+</style>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const wrapper = document.querySelector('#area-wrapper');
+    const addButton = document.querySelector('#add-area');
+
+    // Fonction pour supprimer toutes les suggestions ouvertes sur la page
+    const clearAllSuggestions = () => {
+        document.querySelectorAll('.autocomplete-suggestions').forEach(box => box.remove());
+    };
+
+    const initAutocomplete = (input) => {
+        input.addEventListener('input', async (e) => {
+            const query = e.target.value;
+
+            // On nettoie les anciennes suggestions avant d'afficher les nouvelles
+            clearAllSuggestions();
+
+            if (query.length < 2) return;
+
+            try {
+                const response = await fetch(`/api/cities?q=${encodeURIComponent(query)}`);
+                const cities = await response.json();
+
+                if (cities.length > 0) {
+                    const box = document.createElement('div');
+                    box.className = 'autocomplete-suggestions';
+                    
+                    cities.forEach(city => {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion-item';
+                        div.textContent = city.text;
+                        
+                        div.addEventListener('click', (event) => {
+                            event.stopPropagation(); 
+                            input.value = city.text;
+                            clearAllSuggestions(); // Fermeture immédiate après sélection
+                        });
+                        box.appendChild(div);
+                    });
+
+                    input.parentNode.appendChild(box);
+                }
+            } catch (error) {
+                console.error("Erreur API :", error);
+            }
+        });
+    };
+
+    // Initialiser les champs existants au chargement
+    document.querySelectorAll('.city-autocomplete').forEach(initAutocomplete);
+
+    // Ajouter une nouvelle ligne
+    addButton.addEventListener('click', () => {
+        const index = parseInt(wrapper.dataset.index);
+        const prototype = wrapper.dataset.prototype;
+        const newForm = prototype.replace(/__name__/g, index);
+        
+        const newRow = document.createElement('div');
+        newRow.className = 'area-row relative flex items-start gap-2 animate-fade-in';
+        newRow.innerHTML = `
+            <div class="flex-1">${newForm}</div>
+            <button type="button" class="remove-area mt-2 p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        `;
+
+        wrapper.appendChild(newRow);
+        wrapper.dataset.index = index + 1;
+        
+        // Initialisation de l'autocomplete sur le nouvel input
+        const newInput = newRow.querySelector('input');
+        if (newInput) initAutocomplete(newInput);
+    });
+
+    // Fermer les suggestions si on clique n'importe où ailleurs sur la page
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.autocomplete-suggestions') && !e.target.classList.contains('city-autocomplete')) {
+            clearAllSuggestions();
+        }
+    });
+
+    // Supprimer une ligne
+    wrapper.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.remove-area');
+        if (removeBtn) {
+            removeBtn.closest('.area-row').remove();
+        }
+    });
+});
+</script>
+{% endblock %}

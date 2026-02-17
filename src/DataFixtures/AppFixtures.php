@@ -3,7 +3,9 @@
 namespace App\DataFixtures;
 
 use App\Entity\Candidate;
+use App\Entity\Day;
 use App\Entity\Employer;
+use App\Entity\Time;
 use App\Entity\WageScale;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -120,6 +122,25 @@ class AppFixtures extends Fixture
 
             $missions[]= $mission;
             $manager->persist($mission);
+        }
+
+        //Création des disponibilités
+        $daysName = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+
+        foreach($daysName as $name) {
+            $day = new Day();
+            $day->setDay($name);
+            $manager->persist($day);
+        }
+
+        for($h= 4; $h<= 23; $h++) {
+            foreach(['00', '30'] as $minutes) {
+                $timeString = sprintf('%02dh%s', $h, $minutes);
+
+                $time = new Time();
+                $time->setHour($timeString);
+                $manager->persist($time);
+            }
         }
 
         //Création des skills category

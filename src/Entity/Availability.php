@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\AvailabilityRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AvailabilityRepository::class)]
 class Availability
@@ -28,6 +30,19 @@ class Availability
     #[ORM\ManyToOne(inversedBy: 'endAt')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Time $endTime = null;
+
+    #[Assert\Callback]
+    public function validate(ExecutionContextInterface $context): void
+    {
+        //Vérifie que les 2heures soient bien renseignées
+        if($this->startTime !== null && $this->endTime !== null) {
+            if($this->startTime->getId() >= $this->endTime->getId()) {
+                $context->buildViolation('L\'heure de fin doit être strictement supérieur à l\'heure de début.')
+                ->atPath('endTime')
+                ->addViolation();
+            }
+        }
+    }
 
     public function getId(): ?int
     {

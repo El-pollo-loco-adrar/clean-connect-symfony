@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes disponibilités{% endblock %}
+
+{% block body %}
+<div class="flex items-center justify-center h-auto dark:bg-gray-900 py-10 transition-colors">
+    <div class="w-full max-w-md mx-4 bg-[#F3F4F6] shadow-xl border border-black dark:border-gray-700 rounded-2xl p-8">
+        
+        <h1 class="text-2xl font-bold text-center text-gray-800">Mes disponibilités hebdomadaires</h1>
+        <hr class="border-t-2 border-black my-6 mx-auto w-1/2" />
+    
+        {{ form_start(form) }}
+            <div id="availability-wrapper" 
+                data-prototype="{{ form_row(form.availabilities.vars.prototype)|e('html_attr') }}"
+                data-index="{{ form.availabilities|length }}"
+                class="space-y-4">
+                
+                {% for availForm in form.availabilities %}
+                    <div class="availability-row flex flex-wrap items-end gap-4 p-4 bg-white border border-gray-300 rounded-xl shadow-sm">
+                        <div class="flex-1 min-w-[150px]">
+                            {{ form_row(availForm.day) }}
+                        </div>
+                        <div class="flex-1 min-w-[100px]">
+                            {{ form_row(availForm.startTime) }}
+                        </div>
+                        <div class="flex-1 min-w-[100px]">
+                            {{ form_row(availForm.endTime) }}
+                        </div>
+                        
+                        <button type="button" class="remove-item bg-red-100 text-red-600 p-2 rounded-lg hover:bg-red-200 transition-colors mb-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-8 flex flex-col gap-4">
+                <button type="button" id="add-item" class="border-2 border-dashed border-gray-400 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-100 transition-all">
+                    + Ajouter un créneau horaire
+                </button>
+
+                <div class="mt-8 flex justify-center">
+                        <button type="submit" class="bg-[#2563EBCC] w-fit px-6 py-3 text-white border-2 border-black rounded-[4px] font-bold shadow-lg hover:scale-105 transition-transform">Enregistrer</button>
+                    </div>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const wrapper = document.querySelector('#availability-wrapper');
+        const addButton = document.querySelector('#add-item');
+
+        addButton.addEventListener('click', () => {
+            const prototype = wrapper.dataset.prototype;
+            const index = wrapper.dataset.index;
+            const newForm = prototype.replace(/__name__/g, index);
+            
+            const newRow = document.createElement('div');
+            newRow.classList.add('availability-row', 'flex', 'flex-wrap', 'items-end', 'gap-4', 'p-4', 'bg-white', 'border', 'border-gray-300', 'rounded-xl', 'animate-fade-in');
+            newRow.innerHTML = newForm + `
+                <button type="button" class="remove-item bg-red-100 text-red-600 p-2 rounded-lg hover:bg-red-200 transition-colors mb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>`;
+            
+            wrapper.appendChild(newRow);
+            wrapper.dataset.index = parseInt(index) + 1;
+        });
+
+        wrapper.addEventListener('click', (e) => {
+            if (e.target.closest('.remove-item')) {
+                e.target.closest('.availability-row').remove();
+            }
+        });
+    });
+</script>
+{% endblock %}
