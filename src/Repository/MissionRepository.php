@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Candidate;
 use App\Entity\Mission;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,20 @@ class MissionRepository extends ServiceEntityRepository
         parent::__construct($registry, Mission::class);
     }
 
-    //    /**
-    //     * @return Mission[] Returns an array of Mission objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('m.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Mission
-    //    {
-    //        return $this->createQueryBuilder('m')
-    //            ->andWhere('m.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Récupère les missions qui correspondent aux zones d'intervention du candidat
+     */
+    public function findMissionsByCandidateAreas(Candidate $candidate)
+    {
+        return $this->createQueryBuilder('m')
+            ->innerJoin('m.areaLocation', 'a')
+            ->innerJoin('a.candidates', 'c')
+            ->where('c.id = :candidateId')
+            ->andWhere('m.startAt > :now')
+            ->setParameter('candidateId', $candidate->getId())
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('m.startAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
