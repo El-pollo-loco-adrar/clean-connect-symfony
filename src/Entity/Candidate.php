@@ -20,7 +20,7 @@ class Candidate extends User
     /**
      * @var Collection<int, Availability>
      */
-    #[ORM\OneToMany(targetEntity: Availability::class, mappedBy: 'candidate')]
+    #[ORM\OneToMany(targetEntity: Availability::class, mappedBy: 'candidate', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $availabilities;
 
     /**
