@@ -25,9 +25,16 @@ class Employer extends User
     #[ORM\OneToMany(targetEntity: Mission::class, mappedBy: 'employer')]
     private Collection $missions;
 
+    /**
+     * @var Collection<int, Conversation>
+     */
+    #[ORM\OneToMany(targetEntity: Conversation::class, mappedBy: 'employer')]
+    private Collection $employer;
+
     public function __construct()
     {
         $this->missions = new ArrayCollection();
+        $this->employer = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -71,6 +78,36 @@ class Employer extends User
             // set the owning side to null (unless already changed)
             if ($mission->getEmployer() === $this) {
                 $mission->setEmployer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Conversation>
+     */
+    public function getEmployer(): Collection
+    {
+        return $this->employer;
+    }
+
+    public function addEmployer(Conversation $employer): static
+    {
+        if (!$this->employer->contains($employer)) {
+            $this->employer->add($employer);
+            $employer->setEmployer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEmployer(Conversation $employer): static
+    {
+        if ($this->employer->removeElement($employer)) {
+            // set the owning side to null (unless already changed)
+            if ($employer->getEmployer() === $this) {
+                $employer->setEmployer(null);
             }
         }
 

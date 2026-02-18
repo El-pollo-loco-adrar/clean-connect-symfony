@@ -35,11 +35,18 @@ class Candidate extends User
     #[ORM\ManyToMany(targetEntity: InterventionArea::class, inversedBy: 'candidates')]
     private Collection $interventionArea;
 
+    /**
+     * @var Collection<int, Conversation>
+     */
+    #[ORM\OneToMany(targetEntity: Conversation::class, mappedBy: 'candidate')]
+    private Collection $candidate;
+
     public function __construct()
     {
         $this->availabilities = new ArrayCollection();
         $this->skills = new ArrayCollection();
         $this->interventionArea = new ArrayCollection();
+        $this->candidate = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -122,6 +129,36 @@ class Candidate extends User
     public function removeInterventionArea(InterventionArea $interventionArea): static
     {
         $this->interventionArea->removeElement($interventionArea);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Conversation>
+     */
+    public function getCandidate(): Collection
+    {
+        return $this->candidate;
+    }
+
+    public function addCandidate(Conversation $candidate): static
+    {
+        if (!$this->candidate->contains($candidate)) {
+            $this->candidate->add($candidate);
+            $candidate->setCandidate($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCandidate(Conversation $candidate): static
+    {
+        if ($this->candidate->removeElement($candidate)) {
+            // set the owning side to null (unless already changed)
+            if ($candidate->getCandidate() === $this) {
+                $candidate->setCandidate(null);
+            }
+        }
 
         return $this;
     }
