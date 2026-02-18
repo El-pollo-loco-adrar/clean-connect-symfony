@@ -73,9 +73,16 @@ class Mission
     #[ORM\JoinTable(name:'mission_skills')]
     private Collection $skills;
 
+    /**
+     * @var Collection<int, Conversation>
+     */
+    #[ORM\OneToMany(targetEntity: Conversation::class, mappedBy: 'mission')]
+    private Collection $mission;
+
     public function __construct()
     {
         $this->skills = new ArrayCollection();
+        $this->mission = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -197,6 +204,36 @@ class Mission
     public function removeSkill(Skills $skill): static
     {
         $this->skills->removeElement($skill);
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Conversation>
+     */
+    public function getMission(): Collection
+    {
+        return $this->mission;
+    }
+
+    public function addMission(Conversation $mission): static
+    {
+        if (!$this->mission->contains($mission)) {
+            $this->mission->add($mission);
+            $mission->setMission($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMission(Conversation $mission): static
+    {
+        if ($this->mission->removeElement($mission)) {
+            // set the owning side to null (unless already changed)
+            if ($mission->getMission() === $this) {
+                $mission->setMission(null);
+            }
+        }
+
         return $this;
     }
 }

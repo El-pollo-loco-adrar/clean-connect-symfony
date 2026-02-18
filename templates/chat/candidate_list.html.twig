@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="py-12 px-4 max-w-4xl mx-auto">
+    <h1 class="text-3xl font-black uppercase mb-8 tracking-tighter italic">Mes candidatures & échanges</h1>
+
+    <div class="grid gap-6">
+        {% for conv in conversations %}
+            <a href="{{ path('app_chat_view', {'id': conv.id}) }}" class="block bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h2 class="text-xl font-bold uppercase">{{ conv.mission.title }}</h2>
+                        <p class="text-blue-600 font-bold">{{ conv.employer.companyName }}</p>
+                    </div>
+                    <span class="bg-yellow-300 border-2 border-black px-3 py-1 text-xs font-black uppercase">
+                        {{ conv.messages|length }} message(s)
+                    </span>
+                </div>
+                
+                {% if conv.messages|last %}
+                    <div class="mt-4 pt-4 border-t-2 border-black border-dashed">
+                        <p class="text-sm text-gray-600 truncate">
+                            <span class="font-bold">Dernier message :</span> {{ conv.messages|last.content }}
+                        </p>
+                    </div>
+                {% endif %}
+            </a>
+        {% else %}
+            <div class="border-4 border-black border-dashed p-12 text-center">
+                <p class="font-bold text-gray-500 uppercase">Vous n'avez pas encore postulé à des missions.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
