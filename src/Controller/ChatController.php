@@ -32,7 +32,7 @@ final class ChatController extends AbstractController
         }
 
         // On récupère toutes les conversations où l'utilisateur est le candidat
-        $conversations = $convRepo->findBy(['candidate' => $user]);
+        $conversations = $convRepo->findLastMessage($user);
 
         return $this->render('chat/candidate_list.html.twig', [
             'conversations' => $conversations,
@@ -54,7 +54,7 @@ final class ChatController extends AbstractController
         }
 
         // On récupère toutes les conversations où l'utilisateur est l'employeur
-        $conversations = $convRepo->findBy(['employer' => $user]);
+        $conversations = $convRepo->findLastMessage($user);
 
         return $this->render('chat/employer_list.html.twig', [
             'conversations' => $conversations,
@@ -92,18 +92,9 @@ final class ChatController extends AbstractController
             $conversation->setEmployer($employer);
 
             $em->persist($conversation);
-
-            //Création du 1er message automatique
-            $welcomeMessage = new Message();
-            $welcomeMessage->setContent("Bonjour, je souhaite postuler pour votre mission : " . $mission->getTitle());
-            $welcomeMessage->setAuthor($user);
-            $welcomeMessage->setConversation($conversation);
-            $welcomeMessage->setCreatedAt(new \DateTimeImmutable());
-
-            $em->persist($welcomeMessage);
             $em->flush();
 
-            $this->addFlash('succes', 'Votre candidature a été envoyée !');
+            $this->addFlash('success', 'Votre candidature a été envoyée !');
         }
 
         // 4. On redirige vers la vue de cette conversation
@@ -124,6 +115,14 @@ final class ChatController extends AbstractController
                 throw $this->createAccessDeniedException("Vous n'avez pas accès à cette conversation.");
             }
 
+            //Vérification s'il y a un nouveau message
+            foreach ($conversation->getMessages() as $msg) {
+                    if($msg->getRecipent() === $this->getUser()) {
+                        $msg->setIsRead(true);
+                    }
+                }
+                $em->flush();
+
             $message = new Message();
             $form= $this->createForm(MessageType::class, $message);
             $form->handleRequest($request);
@@ -140,6 +139,12 @@ final class ChatController extends AbstractController
                 $message->setRecipent($recipent);
 
                 $em->persist($message);
+
+                foreach ($conversation->getMessages() as $msg) {
+                    if($msg->getRecipent() === $this->getUser()) {
+                        $msg->setIsRead(true);
+                    }
+                }
                 $em->flush();
 
                 return $this->redirectToRoute('app_chat_view', ['id' => $conversation->getId()]);

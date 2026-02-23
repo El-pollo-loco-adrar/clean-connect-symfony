@@ -1,49 +1,63 @@
 {% extends 'base.html.twig' %}
+{# PAGE DE LA LISTE DES DISCUSSIONS #}
+{% block title %}
+    Messagerie
+{% endblock %}
 
 {% block body %}
+<div class="flex pt-6 md:pt-12 justify-center min-h-screen dark:bg-gray-900 transition-colors">
+    <div class="w-full max-w-2xl mx-4 bg-[#F3F4F6] shadow-xl border border-black dark:border-gray-700 rounded-2xl p-4 md:p-8 mb-10">
 
-<div class="py-12 px-4 max-w-4xl mx-auto">
-<div class="flex justify-between items-center mb-8">
-<h1 class="text-3xl font-black uppercase tracking-tighter italic text-gray-900">Candidatures Reçues</h1>
+        <h1 class="text-xl md:text-2xl font-bold text-center text-gray-800">Candidatures reçues & échanges</h1>
+        <hr class="border-t-2 border-black my-6 mx-auto w-1/2" />
 
-    {# On change le lien ici pour éviter l'erreur si app_employer_dashboard n'existe pas #}
-    <a href="/" class="border-2 border-black px-4 py-2 font-bold text-sm hover:bg-black hover:text-white transition-all uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none bg-white">
-        Retour
-    </a>
-</div>
+        <div class="grid gap-4 md:gap-6">
+            {% for conv in conversations %}
+                {# 1. DÉFINITION DES VARIABLES DE LECTURE AU DÉBUT DE LA BOUCLE #}
+                {% set lastMessage = conv.messages|last %}
+                {# Ajout d'une sécurité : si isRead est null, on considère que c'est false #}
+                {% set isUnread = lastMessage and lastMessage.recipent == app.user and (lastMessage.isRead == false or lastMessage.isRead is null) %}
 
-<div class="grid gap-6">
-    {% for conv in conversations %}
-        <a href="{{ path('app_chat_view', {'id': conv.id}) }}" class="block bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-            <div class="flex justify-between items-start">
-                <div>
-                    <span class="text-[10px] font-black uppercase bg-black text-white px-2 py-0.5 mb-2 inline-block">
-                        Mission : {{ conv.mission.title }}
-                    </span>
-                    <h2 class="text-xl font-bold uppercase">
-                        Candidat : {{ conv.candidate.firstName }} {{ conv.candidate.lastName }}
-                    </h2>
-                </div>
-                <span class="bg-green-400 border-2 border-black px-3 py-1 text-xs font-black uppercase">
-                    {{ conv.messages|length }} échange(s)
-                </span>
+                <a href="{{ path('app_chat_view', {'id': conv.id}) }}" class="block bg-white border-2 {{ isUnread ? 'border-red-500' : 'border-black' }} p-4 md:p-6 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+
+                    {# Flex-col sur mobile, Flex-row sur tablette/PC #}
+                    <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
+                        <div class="min-w-0 flex-1"> {# min-w-0 est crucial pour le truncate plus bas #}
+                            <h2 class="text-lg md:text-xl font-bold uppercase truncate">Mission : {{ conv.mission.title }}</h2>
+                            <p class="text-blue-600 font-semibold truncate">{{ conv.candidate.firstname}} {{ conv.candidate.lastname }}</p>
+
+                            {# 2. AFFICHAGE DU BADGE "NOUVEAU" #}
+                            {% if isUnread %}
+                                <span class="inline-block text-[10px] font-bold bg-red-500 text-white px-2 py-0.5 mt-1 uppercase italic animate-pulse">
+                                    Nouveau message !
+                                </span>
+                            {% endif %}
+                        </div>
+                        {# Badge avec largeur fixe sur mobile pour ne pas être écrasé #}
+                        <span class="whitespace-nowrap bg-yellow-300 border-2 border-black px-3 py-1 text-xs font-bold uppercase inline-block">
+                            {{ conv.messages|length }} message(s)
+                        </span>
+                    </div>
+                    
+                    {% if lastMessage %}
+                        <div class="mt-4 pt-4 border-t-2 border-black border-dashed">
+                            <p class="text-sm text-gray-600">
+                                <span class="font-bold">Dernier message :</span> 
+                                <span class="italic">"{{ lastMessage.content|slice(0, 50) }}..."</span>
+                            </p>
+                            <p class="text-[10px] font-black mt-2 uppercase text-gray-400">
+                                {{ lastMessage.createdAt|date('d/m/Y H:i') }}
+                            </p>
+                        </div>
+                    {% endif %}
+                </a>
+            {% else %}
+            <div class="border-4 p-12 text-center bg-gray-50">
+                <p class="font-bold text-gray-500 uppercase italic">Aucune candidature pour le moment.</p>
             </div>
-            
-            {% if conv.messages|last %}
-                <div class="mt-4 pt-4 border-t-2 border-black border-dashed">
-                    <p class="text-sm text-gray-600 truncate">
-                        <span class="font-bold italic">Dernier message :</span> {{ conv.messages|last.content }}
-                    </p>
-                </div>
-            {% endif %}
-        </a>
-    {% else %}
-        <div class="border-4 border-black border-dashed p-12 text-center bg-gray-50">
-            <p class="font-bold text-gray-500 uppercase italic">Aucune candidature pour le moment.</p>
+        {% endfor %}
         </div>
-    {% endfor %}
-</div>
 
-
+    </div>
 </div>
 {% endblock %}

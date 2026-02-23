@@ -120,6 +120,7 @@ DATABASE_URL="mysql://root:@127.0.0.1:3306/clean-test?serverVersion=8.0.32&chars
 1. Lancer le serveur Symfony
 ```bash
 symfony serve
+symfony server:stop
 ```
 
 2. Lancer le watcher frontend

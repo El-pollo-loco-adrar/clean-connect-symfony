@@ -4,56 +4,95 @@
 {% block title %}Discussion - {{ conversation.mission.title }}{% endblock %}
 
 {% block body %}
-<div class="py-10 flex justify-center h-screen bg-gray-50 dark:bg-gray-900">
-    <div class="w-full max-w-3xl mx-4 flex flex-col bg-[#F3F4F6] border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] rounded-2xl overflow-hidden">
+<div class="flex pt-6 md:pt-12 justify-center min-h-screen dark:bg-gray-900 transition-colors">
+    <div class="w-full max-w-2xl mx-4 flex flex-col bg-[#F3F4F6] shadow-xl border border-black dark:border-gray-700 rounded-2xl overflow-hidden mb-10">
         
         {# HEADER DU CHAT #}
-        <div class="bg-white border-b-4 border-black p-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-xl font-black uppercase tracking-tighter text-gray-900">
+        <div class="bg-white border-b-2 border-black p-4 md:p-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="min-w-0 flex-1">
+                    <h1 class="text-lg md:text-xl font-bold uppercase tracking-tighter text-gray-900 truncate">
                         {{ conversation.mission.title }}
                     </h1>
-                    <p class="text-sm font-bold text-blue-600">
-                        Employeur : {{ conversation.employer.companyName|default('Non renseigné') }}
+                    <p class="text-xs md:text-sm font-bold text-blue-600 truncate uppercase italic">
+                        {% if app.user == conversation.candidate %}
+                            Recruteur : {{ conversation.employer.companyName|default('Non renseigné') }}
+                        {% else %}
+                            Candidat : 
+                            <a href="{{ path('app_candidate_profile', {
+                                'id': conversation.candidate.id,
+                                'conversationId': conversation.id
+                            }) }}" class="text-blue-600 hover:text-blue-800 underline decoration-2 underline-offset-2 transition-all font-black">
+                                {{ conversation.candidate.firstName }} {{ conversation.candidate.lastName }}
+                            </a>
+                        {% endif %}
                     </p>
                 </div>
-                <a href="{{ path('app_candidate_missions_available') }}" class="text-xs font-bold border-2 border-black px-3 py-1 hover:bg-black hover:text-white transition-colors">
-                    RETOUR
+            
+                {# Lien de retour dynamique selon le rôle de l'utilisateur #}
+                {% set back_route = app.user.userType == 'employer' ? 'app_employer_conversations' : 'app_candidate_conversations' %}
+                
+                <a href="{{ path(back_route) }}" class="whitespace-nowrap text-[10px] md:text-xs font-black border-2 border-black px-4 py-2 hover:bg-[#2563EBCC] hover:text-white transition-all hover:shadow-none hover:translate-x-1 hover:translate-y-1 uppercase">
+                    Retour aux messages
                 </a>
             </div>
         </div>
 
-        {# ZONE DES MESSAGES #}
-        <div class="flex-grow overflow-y-auto p-6 space-y-6 bg-[#e5e7eb]">
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-yellow-700" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-yellow-800 font-bold uppercase tracking-tight">
+                        Conseil de sécurité
+                    </p>
+                    <p class="text-xs text-yellow-700 mt-1">
+                        Pour votre sécurité, ne communiquez jamais vos coordonnées personnelles (téléphone, email, RIB), directement dans le chat avant d'avoir vérifié le sérieux du recruteur.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {# ZONE DES MESSAGES - Hauteur fixe ou min-height pour mobile #}
+        <div class="flex-grow overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6 bg-[#e5e7eb] h-[50vh] md:h-[60vh]">
             {% for message in conversation.messages %}
                 <div class="flex {{ message.author == app.user ? 'justify-end' : 'justify-start' }}">
-                    <div class="max-w-[75%]">
+                    <div class="max-w-[85%] sm:max-w-[75%]">
                         {# Bulle de message #}
-                        <div class="p-4 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] 
+                        <div class="p-3 md:p-4 border border-black
                             {{ message.author == app.user ? 'bg-blue-500 text-white' : 'bg-white text-gray-900' }}">
-                            <p class="text-sm font-medium leading-relaxed">
+                            <p class="md:text-sm font-medium leading-relaxed break-words">
                                 {{ message.content }}
                             </p>
                         </div>
                         {# Heure #}
-                        <p class="text-[10px] font-black mt-2 uppercase {{ message.author == app.user ? 'text-right' : 'text-left' }}">
-                            {{ message.createdAt|date('H:i') }}
+                        <p class="text-[9px] md:text-[10px] font-bold mt-2 uppercase {{ message.author == app.user ? 'text-right' : 'text-left' }} text-gray-500">
+                            {{ message.createdAt|date('d/m/Y H:i') }}
                         </p>
                     </div>
                 </div>
             {% else %}
                 <div class="text-center py-10">
-                    <p class="text-gray-500 font-bold italic">Aucun message pour le moment...</p>
+                    <p class="text-gray-500 font-bold italic uppercase text-xs">Ecrivez le 1er message ...</p>
                 </div>
             {% endfor %}
         </div>
 
         {# FOOTER : LE FORMULAIRE #}
-        <div class="bg-white border-t-4 border-black p-4">
-            {{ form_start(form, {'attr': {'class': 'flex gap-4'}}) }}
-                {{ form_widget(form.content) }}
-                <button type="submit" class="bg-yellow-400 border-2 border-black px-6 py-2 font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all uppercase">
+        <div class="bg-white border-t-2 border-black p-4">
+            {{ form_start(form, {'attr': {'class': 'flex flex-col sm:flex-row gap-3'}}) }}
+                <div class="flex-grow">
+                    {{ form_widget(form.content, {
+                        'attr': {
+                            'class': 'w-full border-2 border-black p-2 md:p-3 text-sm focus:ring-0 focus:border-blue-500 outline-none rounded-none',
+                            'placeholder': 'Votre message...'
+                        }
+                    }) }}
+                </div>
+                <button type="submit" class="bg-[#2563EBCC] text-white border-2 border-black px-6 py-2 md:py-3 font-bold hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all uppercase text-sm">
                     Envoyer
                 </button>
             {{ form_end(form) }}

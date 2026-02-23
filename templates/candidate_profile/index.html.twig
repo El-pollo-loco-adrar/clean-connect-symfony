@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+{# Page qui affiche les compétences du candidat pour que l'employeur les consultent #}
+{% block title %}Profil de {{ candidate.firstName }}{% endblock %}
+
+{% block body %}
+<div class="flex pt-6 md:pt-12 justify-center min-h-screen dark:bg-gray-900 transition-colors">
+    <div class="w-full max-w-2xl mx-4 bg-[#F3F4F6] shadow-xl border border-black dark:border-gray-700 rounded-2xl p-4 md:p-8 mb-10">
+        
+        {# Bouton Retour #}
+        {% if conversation is defined %}
+            <a href="{{ path('app_chat_view', {'id': conversation.id}) }}" class="inline-block mb-6 text-xs font-bold border-2 border-black px-4 py-2 bg-white hover:bg-black hover:text-white transition-all hover:shadow-none uppercase">
+                ← Retour
+            </a>
+        {% else %}
+            <a href="{{ path('app_home') }}"class="inline-block mb-6 text-xs font-bold border-2 border-black px-4 py-2 bg-white hover:bg-black hover:text-white transition-all hover:shadow-none uppercase">
+                ← Retour
+            </a>
+        {% endif %}
+
+        <div class="bg-white border-2 border-black p-6 md:p-10 rounded-xl">
+            <h1 class="text-2xl text-center font-bold uppercase tracking-tighter mb-2">
+                {{ candidate.firstName }} {{ candidate.lastName }}
+            </h1>
+
+            <hr class="border-t-2 border-black my-6 mx-auto w-1/2" />
+
+            <h2 class="text-xl font-bold uppercase mb-6 flex items-center gap-2">
+                Compétences
+            </h2>
+
+            <div class="space-y-6">
+                {# COMPETENCES #}
+                {% if candidate.skills is empty %}
+                    <p class="italic text-gray-500">Aucune compétence renseignée pour le moment.</p>
+                {% else %}
+                    <div class="flex flex-wrap gap-3">
+                        {% for skill in candidate.skills %}
+                            <span class="w-full sm:w-auto border border-black px-4 py-2 bg-blue-100 font-bold text-sm">
+                                {{ skill.nameSkill }}
+                                <span class="text-[10px] block text-blue-600 opacity-70 uppercase">{{ skill.skillCategory.nameCategory }}</span>
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <hr class="border-t-2 border-black my-6 mx-auto w-1/2" />
+
+            {#  Zones d'intervention #}
+            {% if candidate.interventionArea is not empty %}
+                <h2 class="text-xl font-bold uppercase mt-10 mb-6 flex items-center gap-2">
+                    Zones d'intervention
+                </h2>
+                <div class="flex flex-wrap gap-2">
+                    {% for area in candidate.interventionArea %}
+                        <span class="bg-gray-100 border border-black px-3 py-1 text-xs font-semibold uppercase">{{ area.city }} - {{ area.postalCode }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <hr class="border-t-2 border-black my-6 mx-auto w-1/2" />
+
+            {# DISPONIBILITES #}
+            {% if candidate.availabilities is not empty %}
+                <h2 class="text-xl font-bold uppercase mt-10 mb-6 flex items-center gap-2">
+                    Disponibilités
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {% for availability in candidate.availabilities %}
+                        <span class="font-semibold uppercase text-sm">
+                            {# Entity Day #}
+                            {{ availability.day.day}}
+                        </span>
+
+                        <span class="text-xs font-semibold bg-blue-100 border border-black px-2 py-1">
+                        {# Entity Time #}
+                            {{ availability.startTime.hour }} - {{ availability.endTime.hour }}
+                        </span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+
+        </div>
+    </div>
+</div>
+{% endblock %}
