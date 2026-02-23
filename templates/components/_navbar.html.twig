@@ -44,9 +44,10 @@
         <div class="hidden lg:flex justify-center bg-[#F3F4F6] py-3">
             <ul class="flex gap-8 text-sm font-bold uppercase tracking-widest text-gray-700">
                 <li><a href="{{ path('app_home') }}" class="hover:text-blue-600 transition-colors">Accueil</a></li>
-                <li><a href="{{ path('app_profile_complete') }}" class="hover:text-blue-600 transition-colors">Mes informations</a></li>
-                <li><a href="#" class="hover:text-blue-600 transition-colors">Documents</a></li>
-                <li><a href="#" class="hover:text-blue-600 transition-colors">Historique des missions</a></li>
+                <li><a href="{{ path('app_mission_create') }}" class="hover:text-blue-600 transition-colors">Créer une mission</a></li>
+                <li><a href="{{ path('app_show_mission') }}" class="hover:text-blue-600 transition-colors">Mes missions</a></li>
+                <li><a href="{{ path('app_employer_conversations') }}" class="hover:text-blue-600 transition-colors">Candidatures et messagerie</a></li>
+                <li><a href="{{ path('app_profile_complete') }}" class="hover:text-blue-600 transition-colors">Modifier mes informations</a></li>
                 <li><a href="#" class="hover:text-blue-600 transition-colors">Mes achats</a></li>
                 <li><a href="#" class="hover:text-blue-600 transition-colors">Contact support</a></li>
             </ul>
@@ -58,11 +59,9 @@
         <div class="hidden lg:flex justify-center bg-white/50 py-3">
             <ul class="flex gap-8 text-sm font-bold uppercase tracking-widest text-gray-700">
                 <li><a href="{{ path('app_home') }}" class="hover:text-blue-600 transition-colors">Accueil</a></li>
-                <li><a href="{{ path('app_profile_complete') }}" class="hover:text-blue-600 transition-colors">Mes informations</a></li>
-                <li><a href="{{ path('app_skills_candidate') }}" class="hover:text-blue-600 transition-colors">Mes compétences</a></li>
-                <li><a href="{{ path('app_candidate_areas') }}" class="hover:text-blue-600 transition-colors">Ma zone de déplacement</a></li>
-                <li><a href="{{ path('app_availability') }}" class="hover:text-blue-600 transition-colors">Mes disponibilités</a></li>
-                <li><a href="#" class="hover:text-blue-600 transition-colors">Historique des missions</a></li>
+                <li><a href="{{ path('app_candidate_missions_available') }}" class="hover:text-blue-600 transition-colors">Voir les mission</a></li>
+                <li><a href="{{ path('app_candidate_conversations') }}" class="hover:text-blue-600 transition-colors">Candidatures et messagerie</a></li>
+                <li><a href="{{ path('app_candidate_profile_dashboard') }}" class="hover:text-blue-600 transition-colors">Modifier mes informations</a></li>
                 <li><a href="#" class="hover:text-blue-600 transition-colors">Contact support</a></li>
             </ul>
         </div>
@@ -76,9 +75,11 @@
                     <p>{{ app.user.firstname }} {{ app.user.lastname }}</p>
                 </div>
                 <a href="{{ path('app_home')}}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Accueil</li></a>
-                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Mes informations</li></a>
-                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Documents entreprise</li></a>
-                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Historique des missions</li></a>
+                <a href="{{ path('app_mission_create')}}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Créer une mission</li></a>
+                <a href="{{ path('app_show_mission')}}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Mes missions</li></a>
+                <a href="{{ path('app_employer_conversations')}}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Candidatures et messagerie</li></a>
+                <a href="{{ path('app_profile_complete') }}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Mes informations</li></a>
+                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Mes achats</li></a>
                 <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Contact support</li></a>
 
                 <a href="{{ path('app_logout') }}" class="block w-full"><li class="p-4 bg-red-100 border-2 border-red-500 text-red-600 rounded-lg shadow-xl">Déconnexion</li></a>
@@ -94,11 +95,9 @@
                     <p>{{ app.user.firstname }} {{ app.user.lastname }}</p>
                 </div>
                 <a href="{{ path('app_home')}}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Accueil</li></a>
-                <a href="{{ path('app_profile_complete') }}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Mes informations</li></a>
-                <a href="{{ path('app_skills_candidate')}}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Mes compétences</li></a>
-                <a href="{{ path('app_candidate_areas') }}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Ma zone de déplacement</li></a>
-                <a href="{{ path('app_availability') }}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Mes disponibilités</li></a>
-                <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Historique des missions</li></a>
+                <a href="{{ path('app_candidate_missions_available')}}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Voir les missions</li></a>
+                <a href="{{ path('app_candidate_conversations')}}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Candidatures & messagerie</li></a>
+                <a href="{{ path('app_candidate_profile_dashboard') }}" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Modifier mes informations</li></a>
                 <a href="#" class="block w-full"><li class="border-2 border-black bg-[#3B82F6]/20 rounded-lg p-4 shadow-xl">Contact support</li></a>
 
                 <a href="{{ path('app_logout') }}" class="block w-full"><li class="p-4 bg-red-100 border-2 border-red-500 text-red-600 rounded-lg shadow-xl">Déconnexion</li></a>

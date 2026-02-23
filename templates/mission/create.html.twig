@@ -32,6 +32,9 @@
                         'class': 'w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-blue-500'
                     }
                 }) }}
+                <div class="text-red-500 text-xs font-bold mt-1">
+                    {{ form_errors(form.title) }}
+                </div>
             </div>
 
             {# --- DESCRIPTION --- #}
@@ -47,6 +50,9 @@
                         'class': 'w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:ring-blue-500'
                         }
                     }) }}
+                <div class="text-red-500 text-xs font-bold mt-1">
+                    {{ form_errors(form.description) }}
+                </div>
             </div>
 
             <hr class="border-t-2 border-black my-6 mx-auto w-1/2" />
@@ -188,10 +194,13 @@
         <div class="mt-8 flex justify-center">
             {{ form_widget(form.submit, {
                 'attr' : {
-                    'class': 'bg-[#2563EBCC] w-fit px-6 py-3 text-white border-2 border-black rounded-[4px] font-bold shadow-lg hover:scale-105 transition-transform'
+                    'class': 'bg-[#2563EBCC] w-fit px-6 py-3 text-white border-2 border-black rounded-[4px] font-bold shadow-lg hover:translate-y-1 hover:shadow-none transition-all'
                 }
                 })
             }}
+        </div>
+        <div class="text-red-600 font-bold text-center mt-4">
+            {{ form_errors(form) }}
         </div>
         {{ form_end(form) }}
     </div>

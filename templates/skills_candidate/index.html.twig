@@ -33,9 +33,16 @@
                     </div>
                 {% endfor %}
             </div>
-            <div class="mt-8 flex justify-center">
-                <button type="submit" class="bg-[#2563EBCC] w-fit px-6 py-3 text-white border-2 border-black rounded-[4px] font-bold shadow-lg hover:scale-105 transition-transform">Enregistrer mes compétences</button>
-            </div>
+            {# Bouton submit #}
+                <div class="mt-8 flex flex-col items-center gap-4">
+                    <button type="submit" class="bg-[#2563EBCC] w-fit px-6 py-3 text-white border-2 border-black rounded-[4px] font-bold shadow-lg hover:scale-105 transition-transform">
+                        Enregistrer mes compétences
+                    </button>
+
+                    <a href="{{ path('app_candidate_profile_dashboard') }}" class="bg-red-500 w-fit px-4 py-1.5 text-sm text-white border-2 border-black rounded-[4px] font-bold shadow-lg hover:scale-105 transition-transform inline-block">
+                        Annuler et revenir en arrière
+                    </a>
+                </div>
             
         {{ form_end(form) }}
     </div>
