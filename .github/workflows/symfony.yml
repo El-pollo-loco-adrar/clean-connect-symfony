@@ -15,11 +15,9 @@ jobs:
       APP_DEBUG: 0
       APP_SECRET: 67d3b0c95805e254e4277b902e1c9d82
       DATABASE_URL: mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0
-      # On dit au Runtime de ne surtout pas chercher de fichier .env
-      # SYMFONY_DOTENV_PATH: /dev/null
       DEFAULT_URI: http://localhost
       MESSENGER_TRANSPORT_DSN: doctrine://default
-      MAILER_DSN: null://default
+      MAILER_DSN: null://null
 
     services:
       mysql:
@@ -29,10 +27,13 @@ jobs:
           MYSQL_DATABASE: symfony_test
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
-      
       - uses: actions/checkout@v4
 
       - name: Setup PHP
@@ -42,33 +43,21 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: none
 
-      # ON SUPPRIME LE RISQUE : On crée un .env et on neutralise Flex
-      # - name: Force Environment
-      #   run: |
-      #     echo "APP_ENV=test" > .env
-      #     echo "APP_SECRET=67d3b0c95805e254e4277b902e1c9d82" >> .env
-      #     echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0" >> .env
-      #     # On empêche Flex d'exécuter quoi que ce soit pendant l'install
-      #     composer config allow-plugins.symfony/flex false
-
-      - name: Fake Webpack Manifest
-        run: |
-          mkdir -p public/build
-          echo "{}" > public/build/manifest.json
-          echo '{"entrypoints": {}}' > public/build/entrypoints.json
-
       - name: Install Dependencies
-        run: composer install --prefer-dist --no-progress --no-scripts
+        run: composer install --prefer-dist --no-progress
 
-      # Maintenant que tout est installé, on réactive ce qu'il faut pour la console
-      - name: Create Database
+      - name: Wait for MySQL
         run: |
-          php bin/console doctrine:database:create --env=test --no-interaction
-          php bin/console doctrine:schema:update --force --env=test --no-interaction
-          php bin/console doctrine:fixtures:load --env=test --no-interaction
+          sudo apt-get install -y mysql-client
+          until mysql -h 127.0.0.1 -uroot -proot -e "SELECT 1"; do
+            sleep 2
+          done
 
-      - name: Test DB Connection
-        run: php bin/console doctrine:query:sql "SELECT 1"
+      - name: Prepare Database
+        run: |
+          php bin/console doctrine:database:create --if-not-exists --env=test
+          php bin/console doctrine:schema:create --env=test
+          php bin/console doctrine:fixtures:load --no-interaction --env=test
 
       - name: Run Tests
         run: php bin/phpunit
