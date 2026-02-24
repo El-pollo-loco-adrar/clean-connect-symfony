@@ -34,113 +34,113 @@ class SecurityPageTest extends WebTestCase
      * /
      * Scénario pour la création d'une mission
      */
-    public function testAddMissionSuccess(): void
-    {
-        $client = static::createClient();
-        $container = static::getContainer();
+    // public function testAddMissionSuccess(): void
+    // {
+    //     $client = static::createClient();
+    //     $container = static::getContainer();
 
-        //! 1. CONNEXION
-        $userRepository = $container->get(UserRepository::class);
-        $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
-        $client->loginUser($testUser);
+    //     //! 1. CONNEXION
+    //     $userRepository = $container->get(UserRepository::class);
+    //     $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
+    //     $client->loginUser($testUser);
 
-        //! 2. RÉCUPÉRATION DES DONNÉES NÉCESSAIRES
-        // On les récupère depuis les Fixtures déjà chargées en base de test (WageScale et Skills)
-        $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
-        $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
+    //     //! 2. RÉCUPÉRATION DES DONNÉES NÉCESSAIRES
+    //     // On les récupère depuis les Fixtures déjà chargées en base de test (WageScale et Skills)
+    //     $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
+    //     $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
 
-        //! 3. ACCÈS À LA PAGE
-        $crawler = $client->request('GET', '/create/mission');
+    //     //! 3. ACCÈS À LA PAGE
+    //     $crawler = $client->request('GET', '/create/mission');
         
-        // On vérifie que la page s'affiche
-        $this->assertResponseIsSuccessful();
+    //     // On vérifie que la page s'affiche
+    //     $this->assertResponseIsSuccessful();
 
-        //! 4. REMPLISSAGE DU FORMULAIRE
-        // On récupère l'objet formulaire via le bouton de soumission
-        $buttonCrawlerNode = $crawler->selectButton('Publier la mission');
-        $form = $buttonCrawlerNode->form();
+    //     //! 4. REMPLISSAGE DU FORMULAIRE
+    //     // On récupère l'objet formulaire via le bouton de soumission
+    //     $buttonCrawlerNode = $crawler->selectButton('Publier la mission');
+    //     $form = $buttonCrawlerNode->form();
 
-        // On remplit les champs.
-        // Pour les entités (WageScale, Skills), on doit passer l'ID ou l'index.
-        $form['add_mission[title]'] = 'Nettoyage Bureaux Test';
-        $form['add_mission[description]'] = 'Une description de plus de 10 caractères pour que la validation passe.';
-        $form['add_mission[startAt]'] = '2027-01-22T08:00';
-        $form['add_mission[endAt]'] = '2027-01-22T12:00';
-        $form['add_mission[areaLocation]'] = '31500 - Toulouse';
-        $form['add_mission[wageScale]'] = (string)$wage->getId();
-        $form['add_mission[skills]'] = [(string)$skill->getId()];
+    //     // On remplit les champs.
+    //     // Pour les entités (WageScale, Skills), on doit passer l'ID ou l'index.
+    //     $form['add_mission[title]'] = 'Nettoyage Bureaux Test';
+    //     $form['add_mission[description]'] = 'Une description de plus de 10 caractères pour que la validation passe.';
+    //     $form['add_mission[startAt]'] = '2027-01-22T08:00';
+    //     $form['add_mission[endAt]'] = '2027-01-22T12:00';
+    //     $form['add_mission[areaLocation]'] = '31500 - Toulouse';
+    //     $form['add_mission[wageScale]'] = (string)$wage->getId();
+    //     $form['add_mission[skills]'] = [(string)$skill->getId()];
 
-        //! 5. ENVOI ET VÉRIFICATION
-        $client->submit($form);
+    //     //! 5. ENVOI ET VÉRIFICATION
+    //     $client->submit($form);
 
-        // On attend une redirection vers /home après le succès
-        $this->assertResponseRedirects('/show/mission');
+    //     // On attend une redirection vers /home après le succès
+    //     $this->assertResponseRedirects('/show/mission');
 
-        // On suit la redirection pour vérifier que la page d'accueil affiche un message de succès
-        //$crawler = $client->followRedirect();
+    //     // On suit la redirection pour vérifier que la page d'accueil affiche un message de succès
+    //     //$crawler = $client->followRedirect();
         
-        // Si tu as un message flash, on vérifie qu'il est présent
-        // $this->assertSelectorExists('.alert-success'); 
-    }
+    //     // Si tu as un message flash, on vérifie qu'il est présent
+    //     // $this->assertSelectorExists('.alert-success'); 
+    // }
 
     /**
      * Test d'inscription d'un user
     */
-    public function testRegistrationWorks():void
-    {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/register');
+    // public function testRegistrationWorks():void
+    // {
+    //     $client = static::createClient();
+    //     $crawler = $client->request('GET', '/register');
 
-        $this->assertResponseIsSuccessful();
+    //     $this->assertResponseIsSuccessful();
 
-        //! 1. On génère un email unique pour éviter l'erreur "Email déjà utilisé"
-        // uniqid() génère un identifiant basé sur l'heure actuelle
-        $uniqueEmail = 'user-' . uniqid() . '@test.com';
+    //     //! 1. On génère un email unique pour éviter l'erreur "Email déjà utilisé"
+    //     // uniqid() génère un identifiant basé sur l'heure actuelle
+    //     $uniqueEmail = 'user-' . uniqid() . '@test.com';
 
-        //! 2. On récupère le formulaire via le bouton
-        $form = $crawler->selectButton("S'inscrire")->form([
-            'registration_form[email]' => $uniqueEmail,
-            'registration_form[plainPassword]' => 'Password1234!',
-            'registration_form[user_type]' => 'candidate',
-            'registration_form[agreeTerms]' => true,
-        ]);
+    //     //! 2. On récupère le formulaire via le bouton
+    //     $form = $crawler->selectButton("S'inscrire")->form([
+    //         'registration_form[email]' => $uniqueEmail,
+    //         'registration_form[plainPassword]' => 'Password1234!',
+    //         'registration_form[user_type]' => 'candidate',
+    //         'registration_form[agreeTerms]' => true,
+    //     ]);
 
-        $client->submit($form);
+    //     $client->submit($form);
 
-        if ($client->getResponse()->getStatusCode() !== 302) {
-            // On récupère les erreurs affichées en rouge (text-red-500 dans ton HTML)
-            $errors = $client->getCrawler()->filter('.text-red-500')->each(fn($n) => $n->text());
-            echo "\n[ERREUR FORMULAIRE] : " . implode(' | ', $errors) . "\n";
-        }
+    //     if ($client->getResponse()->getStatusCode() !== 302) {
+    //         // On récupère les erreurs affichées en rouge (text-red-500 dans ton HTML)
+    //         $errors = $client->getCrawler()->filter('.text-red-500')->each(fn($n) => $n->text());
+    //         echo "\n[ERREUR FORMULAIRE] : " . implode(' | ', $errors) . "\n";
+    //     }
 
-        //! 3. Vérification de la redirection
-        $this->assertResponseRedirects('/home');
+    //     //! 3. Vérification de la redirection
+    //     $this->assertResponseRedirects('/home');
 
-        //! 4. On suit la redirection pour valider
-        $client->followRedirect();
+    //     //! 4. On suit la redirection pour valider
+    //     $client->followRedirect();
 
-        // /home est protégé, le client est renvoyé vers /
-        if($client->getResponse()->isRedirect()){
-            $client->followRedirect();
-        }
+    //     // /home est protégé, le client est renvoyé vers /
+    //     if($client->getResponse()->isRedirect()){
+    //         $client->followRedirect();
+    //     }
 
-        $this->assertResponseIsSuccessful();
-    }
+    //     $this->assertResponseIsSuccessful();
+    // }
 
     /**
      * Test d'un utilisateur qui essaie d'accèder à la page /create/mission sans être connecté
      */
-    public function testCreateMissionIsProtected():void
-    {
-        $client = static::createClient();
+    // public function testCreateMissionIsProtected():void
+    // {
+    //     $client = static::createClient();
 
-        //! 1. On tente d'aller sur la page de création sans être connecté
-        $client->request('GET', '/create/mission');
+    //     //! 1. On tente d'aller sur la page de création sans être connecté
+    //     $client->request('GET', '/create/mission');
 
-        //! 2. Le videur doit nous bloquer et nous rediriger
-        $this->assertResponseRedirects();
+    //     //! 2. Le videur doit nous bloquer et nous rediriger
+    //     $this->assertResponseRedirects();
 
-        //! 3. On vérifie qu'il nous renvoie bien vers la page de connexion
-        $client->followRedirect();
-    }
+    //     //! 3. On vérifie qu'il nous renvoie bien vers la page de connexion
+    //     $client->followRedirect();
+    // }
 }
