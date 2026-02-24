@@ -34,54 +34,54 @@ class SecurityPageTest extends WebTestCase
      * /
      * Scénario pour la création d'une mission
      */
-    // public function testAddMissionSuccess(): void
-    // {
-    //     $client = static::createClient();
-    //     $container = static::getContainer();
+    public function testAddMissionSuccess(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
 
-    //     //! 1. CONNEXION
-    //     $userRepository = $container->get(UserRepository::class);
-    //     $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
-    //     $client->loginUser($testUser);
+        //! 1. CONNEXION
+        $userRepository = $container->get(UserRepository::class);
+        $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
+        $client->loginUser($testUser);
 
-    //     //! 2. RÉCUPÉRATION DES DONNÉES NÉCESSAIRES
-    //     // On les récupère depuis les Fixtures déjà chargées en base de test (WageScale et Skills)
-    //     $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
-    //     $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
+        //! 2. RÉCUPÉRATION DES DONNÉES NÉCESSAIRES
+        // On les récupère depuis les Fixtures déjà chargées en base de test (WageScale et Skills)
+        $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
+        $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
 
-    //     //! 3. ACCÈS À LA PAGE
-    //     $crawler = $client->request('GET', '/create/mission');
+        //! 3. ACCÈS À LA PAGE
+        $crawler = $client->request('GET', '/create/mission');
         
-    //     // On vérifie que la page s'affiche
-    //     $this->assertResponseIsSuccessful();
+        // On vérifie que la page s'affiche
+        $this->assertResponseIsSuccessful();
 
-    //     //! 4. REMPLISSAGE DU FORMULAIRE
-    //     // On récupère l'objet formulaire via le bouton de soumission
-    //     $buttonCrawlerNode = $crawler->selectButton('Publier la mission');
-    //     $form = $buttonCrawlerNode->form();
+        //! 4. REMPLISSAGE DU FORMULAIRE
+        // On récupère l'objet formulaire via le bouton de soumission
+        $buttonCrawlerNode = $crawler->selectButton('Publier la mission');
+        $form = $buttonCrawlerNode->form();
 
-    //     // On remplit les champs.
-    //     // Pour les entités (WageScale, Skills), on doit passer l'ID ou l'index.
-    //     $form['add_mission[title]'] = 'Nettoyage Bureaux Test';
-    //     $form['add_mission[description]'] = 'Une description de plus de 10 caractères pour que la validation passe.';
-    //     $form['add_mission[startAt]'] = '2027-01-22T08:00';
-    //     $form['add_mission[endAt]'] = '2027-01-22T12:00';
-    //     $form['add_mission[areaLocation]'] = '31500 - Toulouse';
-    //     $form['add_mission[wageScale]'] = (string)$wage->getId();
-    //     $form['add_mission[skills]'] = [(string)$skill->getId()];
+        // On remplit les champs.
+        // Pour les entités (WageScale, Skills), on doit passer l'ID ou l'index.
+        $form['add_mission[title]'] = 'Nettoyage Bureaux Test';
+        $form['add_mission[description]'] = 'Une description de plus de 10 caractères pour que la validation passe.';
+        $form['add_mission[startAt]'] = '2027-01-22T08:00';
+        $form['add_mission[endAt]'] = '2027-01-22T12:00';
+        $form['add_mission[areaLocation]'] = '31500 - Toulouse';
+        $form['add_mission[wageScale]'] = (string)$wage->getId();
+        $form['add_mission[skills]'] = [(string)$skill->getId()];
 
-    //     //! 5. ENVOI ET VÉRIFICATION
-    //     $client->submit($form);
+        //! 5. ENVOI ET VÉRIFICATION
+        $client->submit($form);
 
-    //     // On attend une redirection vers /home après le succès
-    //     $this->assertResponseRedirects('/show/mission');
+        // On attend une redirection vers /home après le succès
+        $this->assertResponseRedirects('/show/mission');
 
-    //     // On suit la redirection pour vérifier que la page d'accueil affiche un message de succès
-    //     //$crawler = $client->followRedirect();
+        // On suit la redirection pour vérifier que la page d'accueil affiche un message de succès
+        //$crawler = $client->followRedirect();
         
-    //     // Si tu as un message flash, on vérifie qu'il est présent
-    //     // $this->assertSelectorExists('.alert-success'); 
-    // }
+        // Si tu as un message flash, on vérifie qu'il est présent
+        // $this->assertSelectorExists('.alert-success'); 
+    }
 
     /**
      * Test d'inscription d'un user
