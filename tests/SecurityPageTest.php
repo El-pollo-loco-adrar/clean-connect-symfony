@@ -42,6 +42,7 @@ class SecurityPageTest extends WebTestCase
         //! 1. CONNEXION
         $userRepository = $container->get(UserRepository::class);
         $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
+        $this->assertNotNull($testUser, "User absent en CI");
         $client->loginUser($testUser);
 
         //! 2. RÉCUPÉRATION DES DONNÉES NÉCESSAIRES
@@ -51,7 +52,7 @@ class SecurityPageTest extends WebTestCase
 
         $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
         $this->assertNotNull($wage, "Aucun WageScale trouvé en base sur GitHub.");
-        
+
         $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
 
         //! 3. ACCÈS À LA PAGE
