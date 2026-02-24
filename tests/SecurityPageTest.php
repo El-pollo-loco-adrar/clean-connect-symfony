@@ -46,7 +46,12 @@ class SecurityPageTest extends WebTestCase
 
         //! 2. RÉCUPÉRATION DES DONNÉES NÉCESSAIRES
         // On les récupère depuis les Fixtures déjà chargées en base de test (WageScale et Skills)
+        $user = $container->get(UserRepository::class)->findOneBy(['email' => 'test-ci@test.com']);
+        $this->assertNotNull($user, "L'utilisateur n'existe pas en base sur GitHub.");
+
         $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
+        $this->assertNotNull($wage, "Aucun WageScale trouvé en base sur GitHub.");
+        
         $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
 
         //! 3. ACCÈS À LA PAGE
