@@ -10,25 +10,25 @@ class SecurityPageTest extends WebTestCase
     /**
      * Test connexion avec Employer
      */
-    // public function testLoginSuccess(): void
-    // {
-    //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/'); 
+    public function testLoginSuccess(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/'); 
 
-    //     // 1. On remplit et soumet le formulaire
-    //     $client->submitForm('Se connecter', [
-    //         'email' => 'test-ci@test.com',
-    //         'password' => 'SuperPassWord123',
-    //     ]);
+        // 1. On remplit et soumet le formulaire
+        $client->submitForm('Se connecter', [
+            'email' => 'test-ci@test.com',
+            'password' => 'SuperPassWord123',
+        ]);
 
-    //     // 2. On vérifie la redirection
-    //     // Si ça échoue ici, PHPUnit affichera quand même une erreur détaillée
-    //     $this->assertResponseRedirects('/home');
+        // 2. On vérifie la redirection
+        // Si ça échoue ici, PHPUnit affichera quand même une erreur détaillée
+        $this->assertResponseRedirects('/home');
 
-    //     // 3. On suit la redirection pour vérifier que la page d'arrivée est OK
-    //     $client->followRedirect();
-    //     $this->assertResponseIsSuccessful();
-    // }
+        // 3. On suit la redirection pour vérifier que la page d'arrivée est OK
+        $client->followRedirect();
+        $this->assertResponseIsSuccessful();
+    }
 
     /**
      * /
