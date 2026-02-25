@@ -74,17 +74,17 @@ class SecurityPageTest extends WebTestCase
 
         //! 5. REMPLISSAGE DES CHAMPS
         // Pour les entités (WageScale, Skills), on doit passer l'ID ou l'index.
-        $form['add_mission[title]'] = 'Nettoyage Bureaux Test';
-        $form['add_mission[description]'] = 'Une description de plus de 10 caractères pour que la validation passe.';
-        $form['add_mission[startAt]'] = '2027-01-22T08:00:00';
-        $form['add_mission[endAt]'] = '2027-01-22T12:00:00';
-        $form['add_mission[areaLocation]'] = '31500 Toulouse';
-        $form['add_mission[wageScale]'] = (string)$wage->getId();
-        $form['add_mission[skills]'] = [(string)$skill->getId()];
+        $form['title'] = 'Nettoyage Bureaux Test';
+        $form['description'] = 'Une description de plus de 10 caractères pour que la validation passe.';
+        $form['startAt'] = '2027-01-22T08:00:00';
+        $form['endAt'] = '2027-01-22T12:00:00';
+        $form['areaLocation'] = '31500 Toulouse';
+        $form['wageScale'] = (string)$wage->getId();
+        $form['skills'] = [(string)$skill->getId()];
 
         //! 5. ENVOI ET VÉRIFICATION
         $client->submit($form);
-        dump($client->getResponse()->getContent());
+        //dump($client->getResponse()->getContent());
 
         // On attend une redirection vers /home après le succès
         $this->assertResponseRedirects('/show/mission');
