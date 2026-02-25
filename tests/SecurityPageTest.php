@@ -39,43 +39,38 @@ public function testAddMissionSuccess(): void
     $client = static::createClient();
     $container = static::getContainer();
 
-    // 1. Setup
+    // 1. Authentification
     $userRepository = $container->get(UserRepository::class);
     $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
     $client->loginUser($testUser);
 
+    // 2. Data
     $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
     $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
     $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
 
-    // Sécurité CI : On vérifie que skill existe
-    $this->assertNotNull($skill, "Aucune compétence trouvée en base.");
-
-    // 2. Requête
+    // 3. Récupération du formulaire
     $crawler = $client->request('GET', '/create/mission');
     $form = $crawler->selectButton('Publier la mission')->form();
+
+    // 4. On prépare les valeurs
+    $values = $form->getPhpValues(); // On récupère les valeurs par défaut (dont le Token CSRF !)
+
+    // On injecte manuellement nos données dans le tableau
+    $values['add_mission']['title'] = 'Menage Pro';
+    $values['add_mission']['description'] = 'Une description de plus de dix caractères';
+    $values['add_mission']['startAt'] = (new \DateTime('+2 days'))->format('Y-m-d\TH:i');
+    $values['add_mission']['endAt'] = (new \DateTime('+3 days'))->format('Y-m-d\TH:i');
+    $values['add_mission']['areaLocation'] = $area->getPostalCode().' - '.$area->getCity();
+    $values['add_mission']['wageScale'] = (string) $wage->getId();
     
-    // 3. Soumission avec Skills
-    $client->submit($form, [
-        'add_mission[title]' => 'Nettoyage de printemps',
-        'add_mission[description]' => 'Une description de plus de dix caracteres pour la validation',
-        'add_mission[startAt]' => (new \DateTime('+2 days'))->format('Y-m-d\TH:i'),
-        'add_mission[endAt]' => (new \DateTime('+3 days'))->format('Y-m-d\TH:i'),
-        'add_mission[areaLocation]' => $area->getPostalCode().' - '.$area->getCity(),
-        'add_mission[wageScale]' => (string) $wage->getId(),
-        // IMPORTANT : On force le passage en tableau de string
-        'add_mission[skills]' => [(string) $skill->getId()], 
-    ]);
+    // Pour les compétences (EntityType multiple + expanded), Symfony attend un tableau d'IDs
+    $values['add_mission']['skills'] = [(string) $skill->getId()];
 
-    // 4. Analyse si ça ne redirige pas (Le débugueur)
-    if (!$client->getResponse()->isRedirect()) {
-        $crawler = $client->getCrawler();
-        // On cherche spécifiquement l'erreur sur le champ skills
-        $skillErrors = $crawler->filter('label[for="add_mission_skills"]')->closest('div')->filter('.invalid-feedback')->each(fn($n) => $n->text());
-        
-        $this->fail("Erreur validation skills : " . implode(' | ', $skillErrors));
-    }
+    // 5. Soumission forcée
+    $client->request($form->getMethod(), $form->getUri(), $values);
 
+    // 6. Vérification
     $this->assertResponseRedirects('/show/mission');
 }
 
