@@ -39,46 +39,54 @@ class SecurityPageTest extends WebTestCase
         $client = static::createClient();
         $container = static::getContainer();
 
-        //! 1. CONNEXION
+        // 1. Authentification
         $userRepository = $container->get(UserRepository::class);
         $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
-        $this->assertNotNull($testUser, "L'utilisateur test-ci@test.com est introuvable.");
         $client->loginUser($testUser);
 
-        //! 2. RÉCUPÉRATION DES DONNÉES
+        // 2. Préparation des données
         $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
         $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
         $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
-        
-        $this->assertNotNull($area, "Zone 'Toulouse' non trouvée.");
 
-        //! 3. ACCÈS À LA PAGE
+        // 3. Récupération du formulaire
         $crawler = $client->request('GET', '/create/mission');
         $this->assertResponseIsSuccessful();
 
-        //! 4. RÉCUPÉRATION ET REMPLISSAGE DU FORMULAIRE
-        // On sélectionne le bouton, ce qui permet à Symfony de gérer le jeton CSRF automatiquement
-        $form = $crawler->selectButton('Publier la mission')->form();
+        // On récupère le formulaire via le bouton de soumission
+        $buttonCrawler = $crawler->selectButton('Publier la mission');
+        $form = $buttonCrawler->form();
 
-        // On remplit les champs via l'accès tableau (plus fiable que de passer un array à submit)
-        $form['add_mission[title]'] = 'Nettoyage Bureaux Test';
-        $form['add_mission[description]'] = 'Une description de plus de dix caractères pour la validation.';
-        $form['add_mission[startAt]'] = (new \DateTime('+2 days'))->format('Y-m-d\TH:i');
-        $form['add_mission[endAt]'] = (new \DateTime('+3 days'))->format('Y-m-d\TH:i');
-        $form['add_mission[areaLocation]'] = $area->getPostalCode().' - '.$area->getCity();
-        $form['add_mission[wageScale]'] = (string) $wage->getId();
-        $form['add_mission[skills]'] = [(string) $skill->getId()];
+        // 4. Injection manuelle (méthode la plus robuste)
+        // On utilise l'accès par tableau pour être sûr que Symfony "voit" la modification
+        $formValues = [
+            'add_mission[title]' => 'Menage de printemps',
+            'add_mission[description]' => 'Une description de plus de 10 caracteres pour la validation',
+            'add_mission[startAt]' => (new \DateTime('+2 days'))->format('Y-m-d\TH:i'),
+            'add_mission[endAt]' => (new \DateTime('+3 days'))->format('Y-m-d\TH:i'),
+            'add_mission[areaLocation]' => $area->getPostalCode().' - '.$area->getCity(),
+            'add_mission[wageScale]' => (string) $wage->getId(),
+            'add_mission[skills]' => [(string) $skill->getId()],
+        ];
 
-        //! 5. ENVOI
-        $client->submit($form);
+        // 5. Soumission explicite
+        $client->submit($form, $formValues);
 
-        //! 6. VÉRIFICATION
+        // 6. Diagnostic si échec
         $response = $client->getResponse();
-        
         if (!$response->isRedirect()) {
-            // En cas d'échec, on affiche les erreurs de formulaire réelles
-            $errors = $client->getCrawler()->filter('.invalid-feedback, .alert-danger')->each(fn($n) => $n->text());
-            $this->fail("Le formulaire n'a pas redirigé. Erreurs trouvées : " . implode(' | ', $errors));
+            echo "\n--- ERREURS DE VALIDATION DETECTEES ---\n";
+            $errorMessages = $client->getCrawler()->filter('.invalid-feedback, .alert-danger')->each(fn($node) => $node->text());
+            foreach ($errorMessages as $msg) echo "- $msg\n";
+            
+            // Si toujours rien, on dump les erreurs de l'objet Form directement
+            if (empty($errorMessages)) {
+                $profile = $client->getProfile();
+                $collector = $profile->getCollector('form');
+                dump($collector->getData());
+            }
+            
+            $this->fail("Le formulaire n'a pas redirigé. Code: " . $response->getStatusCode());
         }
 
         $this->assertResponseRedirects('/show/mission');
