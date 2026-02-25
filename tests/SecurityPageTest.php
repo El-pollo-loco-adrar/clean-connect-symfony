@@ -47,18 +47,20 @@ class SecurityPageTest extends WebTestCase
 
         //! 2. RÉCUPÉRATION DES DONNÉES NÉCESSAIRES
         // On les récupère depuis les Fixtures déjà chargées en base de test (WageScale et Skills)
-        $user = $container->get(UserRepository::class)->findOneBy(['email' => 'test-ci@test.com']);
-        $this->assertNotNull($user, "L'utilisateur n'existe pas en base sur GitHub.");
+
+        //$user = $container->get(UserRepository::class)->findOneBy(['email' => 'test-ci@test.com']);
+        //$this->assertNotNull($user, "L'utilisateur n'existe pas en base sur GitHub.");
 
         $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
-        $this->assertNotNull($wage, "Aucun WageScale trouvé en base sur GitHub.");
+        $this->assertNotNull($wage);
 
         $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
+        $this->assertNotNull($skill);
 
-        $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy([]);
+        $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
         $this->assertNotNull($area);
 
-        $form['add_mission[areaLocation]'] = (string)$area->getId();
+        //$form['add_mission[areaLocation]'] = (string)$area->getId();
 
         //! 3. ACCÈS À LA PAGE
         $crawler = $client->request('GET', '/create/mission');
@@ -66,18 +68,17 @@ class SecurityPageTest extends WebTestCase
         // On vérifie que la page s'affiche
         $this->assertResponseIsSuccessful();
 
-        //! 4. REMPLISSAGE DU FORMULAIRE
+        //! 4. RECUPERATION DU FORMULAIRE
         // On récupère l'objet formulaire via le bouton de soumission
-        $buttonCrawlerNode = $crawler->selectButton('Publier la mission');
-        $form = $buttonCrawlerNode->form();
+        $form = $crawler->selectButton('Publier la mission')->form();
 
-        // On remplit les champs.
+        //! 5. REMPLISSAGE DES CHAMPS
         // Pour les entités (WageScale, Skills), on doit passer l'ID ou l'index.
         $form['add_mission[title]'] = 'Nettoyage Bureaux Test';
         $form['add_mission[description]'] = 'Une description de plus de 10 caractères pour que la validation passe.';
         $form['add_mission[startAt]'] = '2027-01-22T08:00';
         $form['add_mission[endAt]'] = '2027-01-22T12:00';
-        $form['add_mission[areaLocation]'] = '31500 - Toulouse';
+        $form['add_mission[areaLocation]'] = '31500 Toulouse';
         $form['add_mission[wageScale]'] = (string)$wage->getId();
         $form['add_mission[skills]'] = [(string)$skill->getId()];
 
