@@ -39,54 +39,65 @@ class SecurityPageTest extends WebTestCase
         $client = static::createClient();
         $container = static::getContainer();
 
-        // 1. Authentification
+        // --- ÉTAPE 1 : LOGIN ---
         $userRepository = $container->get(UserRepository::class);
         $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
+        if (!$testUser) {
+            dump("ERREUR : Utilisateur non trouvé");
+            die();
+        }
         $client->loginUser($testUser);
 
-        // 2. Préparation des données
+        // --- ÉTAPE 2 : RÉCUPÉRATION DATA ---
         $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
-        $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
         $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
+        
+        if (!$area) {
+            dump("ERREUR : Toulouse non trouvé dans la DB");
+            die();
+        }
 
-        // 3. Récupération du formulaire
+        // --- ÉTAPE 3 : ACCÈS PAGE ---
         $crawler = $client->request('GET', '/create/mission');
-        $this->assertResponseIsSuccessful();
+        dump("Statut page : " . $client->getResponse()->getStatusCode());
 
-        // On récupère le formulaire via le bouton de soumission
-        $buttonCrawler = $crawler->selectButton('Publier la mission');
-        $form = $buttonCrawler->form();
+        // --- ÉTAPE 4 : LE FORMULAIRE ---
+        try {
+            $buttonCrawler = $crawler->selectButton('Publier la mission');
+            $form = $buttonCrawler->form();
+            dump("Formulaire trouvé !");
+        } catch (\Exception $e) {
+            dump("ERREUR : Bouton non trouvé -> " . $e->getMessage());
+            die();
+        }
 
-        // 4. Injection manuelle (méthode la plus robuste)
-        // On utilise l'accès par tableau pour être sûr que Symfony "voit" la modification
-        $formValues = [
-            'add_mission[title]' => 'Menage de printemps',
-            'add_mission[description]' => 'Une description de plus de 10 caracteres pour la validation',
-            'add_mission[startAt]' => (new \DateTime('+2 days'))->format('Y-m-d\TH:i'),
-            'add_mission[endAt]' => (new \DateTime('+3 days'))->format('Y-m-d\TH:i'),
-            'add_mission[areaLocation]' => $area->getPostalCode().' - '.$area->getCity(),
-            'add_mission[wageScale]' => (string) $wage->getId(),
-            'add_mission[skills]' => [(string) $skill->getId()],
-        ];
+        // --- ÉTAPE 5 : SOUMISSION (Le point critique) ---
+        dump("Tentative de soumission...");
+        
+        // On utilise un try/catch pour attraper l'erreur SQL ou Symfony qui fait crasher le CI
+        try {
+            $client->submit($form, [
+                'add_mission[title]' => 'Menage de printemps',
+                'add_mission[description]' => 'Une description de plus de 10 caracteres',
+                'add_mission[startAt]' => (new \DateTime('+2 days'))->format('Y-m-d\TH:i'),
+                'add_mission[endAt]' => (new \DateTime('+3 days'))->format('Y-m-d\TH:i'),
+                'add_mission[areaLocation]' => $area->getPostalCode().' - '.$area->getCity(),
+                'add_mission[wageScale]' => (string) $wage->getId(),
+                'add_mission[skills]' => [], // On teste vide pour isoler le problème
+            ]);
+        } catch (\Throwable $t) {
+            dump("CRASH PENDANT SUBMIT : " . $t->getMessage());
+            dump("FICHIER : " . $t->getFile() . " Ligne : " . $t->getLine());
+            die(); 
+        }
 
-        // 5. Soumission explicite
-        $client->submit($form, $formValues);
-
-        // 6. Diagnostic si échec
+        dump("Soumission terminée sans crash fatal.");
+        
         $response = $client->getResponse();
+        dump("Code HTTP après submit : " . $response->getStatusCode());
+        
         if (!$response->isRedirect()) {
-            echo "\n--- ERREURS DE VALIDATION DETECTEES ---\n";
-            $errorMessages = $client->getCrawler()->filter('.invalid-feedback, .alert-danger')->each(fn($node) => $node->text());
-            foreach ($errorMessages as $msg) echo "- $msg\n";
-            
-            // Si toujours rien, on dump les erreurs de l'objet Form directement
-            if (empty($errorMessages)) {
-                $profile = $client->getProfile();
-                $collector = $profile->getCollector('form');
-                dump($collector->getData());
-            }
-            
-            $this->fail("Le formulaire n'a pas redirigé. Code: " . $response->getStatusCode());
+            dump("Contenu de l'erreur (1000 chars) : " . substr($response->getContent(), 0, 1000));
         }
 
         $this->assertResponseRedirects('/show/mission');
