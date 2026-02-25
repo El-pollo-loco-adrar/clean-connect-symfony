@@ -82,10 +82,15 @@ class SecurityPageTest extends WebTestCase
         $form['add_mission[wageScale]'] = (string) $wage->getId();
         $form['add_mission[skills]'] = [(string) $skill->getId()];
 
-        dump($form->getPhpValues());
+        //dump($form->getPhpValues());
         //! 5. ENVOI ET VÉRIFICATION
         $client->submit($form);
-        dump($client->getResponse()->getContent());
+        //dump($client->getResponse()->getContent());
+
+        // Vérifier que la soumission a réussi et redirige
+        if (!$client->getResponse()->isRedirect()) {
+            $this->fail('La soumission du formulaire n\'a pas redirigé. Contenu de la réponse : ' . $client->getResponse()->getContent());
+        }
 
         // On attend une redirection vers /home après le succès
         $this->assertResponseRedirects('/show/mission');
