@@ -84,6 +84,7 @@ class SecurityPageTest extends WebTestCase
 
         //! 5. ENVOI ET VÉRIFICATION
         $client->submit($form);
+        dump($client->getResponse()->getContent());
 
         // On attend une redirection vers /home après le succès
         $this->assertResponseRedirects('/show/mission');
