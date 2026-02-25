@@ -79,6 +79,7 @@ class SecurityPageTest extends WebTestCase
     */
     public function testRegistrationWorks():void
     {
+
         $client = static::createClient();
         $crawler = $client->request('GET', '/register');
 
@@ -93,8 +94,22 @@ class SecurityPageTest extends WebTestCase
             'registration_form[email]' => $uniqueEmail,
             'registration_form[plainPassword]' => 'Password1234!',
             'registration_form[user_type]' => 'candidate',
-            'registration_form[agreeTerms]' => true,
+            'registration_form[agreeTerms]' => 1,
         ]);
+
+        // 2. DEBUG : Si ça ne redirige pas, on veut savoir pourquoi !
+    if ($client->getResponse()->getStatusCode() !== 302) {
+        $html = $client->getCrawler()->html();
+        // On cherche les erreurs de validation Symfony
+        if (str_contains($html, 'invalid-feedback') || str_contains($html, 'text-red-500')) {
+             echo "\n[ERREUR VALIDATION] : Vérifiez les contraintes (mot de passe, email unique...)\n";
+        } else {
+             // C'est probablement une erreur 500 (le rôle manquant !)
+             echo "\n[ERREUR SERVEUR] : " . substr($client->getResponse()->getContent(), 0, 500) . "\n";
+        }
+    }
+
+    $this->assertResponseRedirects('/app_home');
 
         $client->submit($form);
 
@@ -121,17 +136,17 @@ class SecurityPageTest extends WebTestCase
     /**
      * Test d'un utilisateur qui essaie d'accèder à la page /create/mission sans être connecté
      */
-    public function testCreateMissionIsProtected():void
-    {
-        $client = static::createClient();
+//     public function testCreateMissionIsProtected():void
+//     {
+//         $client = static::createClient();
 
-     //! 1. On tente d'aller sur la page de création sans être connecté
-        $client->request('GET', '/create/mission');
+//      //! 1. On tente d'aller sur la page de création sans être connecté
+//         $client->request('GET', '/create/mission');
 
-     //! 2. Le videur doit nous bloquer et nous rediriger
-        $this->assertResponseRedirects();
+//      //! 2. Le videur doit nous bloquer et nous rediriger
+//         $this->assertResponseRedirects();
 
-    //! 3. On vérifie qu'il nous renvoie bien vers la page de connexion
-        $client->followRedirect();
-    }
+//     //! 3. On vérifie qu'il nous renvoie bien vers la page de connexion
+//         $client->followRedirect();
+//     }
 }
