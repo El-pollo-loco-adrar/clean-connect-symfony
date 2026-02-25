@@ -10,7 +10,31 @@ class SecurityPageTest extends WebTestCase
     /**
      * Test connexion avec Employer
      */
-    public function testAddMissionSuccess(): void
+    public function testLoginSuccess(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/'); 
+
+        // 1. On remplit et soumet le formulaire
+        $client->submitForm('Se connecter', [
+            'email' => 'test-ci@test.com',
+            'password' => 'SuperPassWord123',
+        ]);
+
+        // 2. On vérifie la redirection
+        // Si ça échoue ici, PHPUnit affichera quand même une erreur détaillée
+        $this->assertResponseRedirects('/home');
+
+        // 3. On suit la redirection pour vérifier que la page d'arrivée est OK
+        $client->followRedirect();
+        $this->assertResponseIsSuccessful();
+    }
+
+    /**
+     * /
+     * Scénario pour la création d'une mission
+     */
+public function testAddMissionSuccess(): void
 {
     $client = static::createClient();
     $container = static::getContainer();
@@ -53,46 +77,6 @@ class SecurityPageTest extends WebTestCase
     }
 
     $this->assertResponseRedirects('/show/mission');
-}
-
-    /**
-     * /
-     * Scénario pour la création d'une mission
-     */
-    public function testAddMissionSuccess(): void
-{
-    $client = static::createClient();
-    $container = static::getContainer();
-
-    // 1. Setup
-    $userRepository = $container->get(UserRepository::class);
-    $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
-    $client->loginUser($testUser);
-
-    $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
-    $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
-    $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
-
-    // 2. Requête
-    $crawler = $client->request('GET', '/create/mission');
-    
-    // 3. Soumission
-    $form = $crawler->selectButton('Publier la mission')->form();
-    
-    $client->submit($form, [
-        'add_mission[title]' => 'Nettoyage de printemps',
-        'add_mission[description]' => 'Une description de plus de dix caracteres pour la validation',
-        'add_mission[startAt]' => (new \DateTime('+2 days'))->format('Y-m-d\TH:i'),
-        'add_mission[endAt]' => (new \DateTime('+3 days'))->format('Y-m-d\TH:i'),
-        'add_mission[areaLocation]' => $area->getPostalCode().' - '.$area->getCity(),
-        'add_mission[wageScale]' => (string) $wage->getId(),
-        'add_mission[skills]' => [(string) $skill->getId()], // Remets le skill ici pour voir
-    ]);
-
-    // 4. Assertions finales
-    $this->assertResponseRedirects('/show/mission');
-    $client->followRedirect();
-    $this->assertSelectorTextContains('h1', 'Détails de la mission'); // Ou un titre présent sur ta page de succès
 }
 
     /**
