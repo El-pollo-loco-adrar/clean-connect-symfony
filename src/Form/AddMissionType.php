@@ -49,6 +49,7 @@ class AddMissionType extends AbstractType
             )
             ->add('startAt', DateTimeType::class, [
                 'widget'=> 'single_text',
+                'input' => 'datetime_immutable',
                 'label'=> 'Date et heure de début : ',
                 'attr' => [
                     'class' => 'w-full rounded-md border-gray-300 shadow-sm'
@@ -57,6 +58,7 @@ class AddMissionType extends AbstractType
             )
             ->add('endAt', DateTimeType::class, [
                 'widget'=> 'single_text',
+                'input' => 'datetime_immutable',
                 'label' => 'Date et heure de fin : ',
                 'attr' => [
                     'class' => 'w-full rounded-md border-gray-300 shadow-sm'
