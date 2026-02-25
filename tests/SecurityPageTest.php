@@ -105,17 +105,17 @@ public function testRegistrationWorks(): void
     /**
      * Test d'un utilisateur qui essaie d'accèder à la page /create/mission sans être connecté
      */
-//     public function testCreateMissionIsProtected():void
-//     {
-//         $client = static::createClient();
+    public function testCreateMissionIsProtected():void
+    {
+        $client = static::createClient();
 
-//      //! 1. On tente d'aller sur la page de création sans être connecté
-//         $client->request('GET', '/create/mission');
+     //! 1. On tente d'aller sur la page de création sans être connecté
+        $client->request('GET', '/create/mission');
 
-//      //! 2. Le videur doit nous bloquer et nous rediriger
-//         $this->assertResponseRedirects();
+     //! 2. Le videur doit nous bloquer et nous rediriger
+        $this->assertResponseRedirects();
 
-//     //! 3. On vérifie qu'il nous renvoie bien vers la page de connexion
-//         $client->followRedirect();
-//     }
+    //! 3. On vérifie qu'il nous renvoie bien vers la page de connexion
+        $client->followRedirect();
+    }
 }
