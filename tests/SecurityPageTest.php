@@ -39,40 +39,46 @@ class SecurityPageTest extends WebTestCase
         $client = static::createClient();
         $container = static::getContainer();
 
-        // 1. Login
+        //! 1. CONNEXION
         $userRepository = $container->get(UserRepository::class);
         $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
+        $this->assertNotNull($testUser, "L'utilisateur test-ci@test.com est introuvable.");
         $client->loginUser($testUser);
 
-        // 2. Données
+        //! 2. RÉCUPÉRATION DES DONNÉES
         $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
         $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
         $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
-
-        // 3. Crawler
-        $crawler = $client->request('GET', '/create/mission');
         
-        // Sélection explicite du formulaire par son nom (attribut 'name')
-        $form = $crawler->filter('form[name="add_mission"]')->form();
+        $this->assertNotNull($area, "Zone 'Toulouse' non trouvée.");
 
-        // 4. Remplissage manuel (Méthode la plus stable pour GitHub)
-        $form['add_mission[title]'] = 'Nettoyage de printemps';
-        $form['add_mission[description]'] = 'Une description de plus de dix caracteres pour passer la validation';
+        //! 3. ACCÈS À LA PAGE
+        $crawler = $client->request('GET', '/create/mission');
+        $this->assertResponseIsSuccessful();
+
+        //! 4. RÉCUPÉRATION ET REMPLISSAGE DU FORMULAIRE
+        // On sélectionne le bouton, ce qui permet à Symfony de gérer le jeton CSRF automatiquement
+        $form = $crawler->selectButton('Publier la mission')->form();
+
+        // On remplit les champs via l'accès tableau (plus fiable que de passer un array à submit)
+        $form['add_mission[title]'] = 'Nettoyage Bureaux Test';
+        $form['add_mission[description]'] = 'Une description de plus de dix caractères pour la validation.';
         $form['add_mission[startAt]'] = (new \DateTime('+2 days'))->format('Y-m-d\TH:i');
         $form['add_mission[endAt]'] = (new \DateTime('+3 days'))->format('Y-m-d\TH:i');
         $form['add_mission[areaLocation]'] = $area->getPostalCode().' - '.$area->getCity();
         $form['add_mission[wageScale]'] = (string) $wage->getId();
         $form['add_mission[skills]'] = [(string) $skill->getId()];
 
-        // 5. Soumission
+        //! 5. ENVOI
         $client->submit($form);
 
-        // 6. Vérification de la redirection
+        //! 6. VÉRIFICATION
         $response = $client->getResponse();
+        
         if (!$response->isRedirect()) {
-            // Si ça rate, on affiche les erreurs de validation du formulaire
+            // En cas d'échec, on affiche les erreurs de formulaire réelles
             $errors = $client->getCrawler()->filter('.invalid-feedback, .alert-danger')->each(fn($n) => $n->text());
-            $this->fail("Echec soumission. Status: " . $response->getStatusCode() . " Erreurs: " . implode(' | ', $errors));
+            $this->fail("Le formulaire n'a pas redirigé. Erreurs trouvées : " . implode(' | ', $errors));
         }
 
         $this->assertResponseRedirects('/show/mission');
