@@ -59,5 +59,16 @@ jobs:
           php bin/console doctrine:schema:create --env=test
           php bin/console doctrine:fixtures:load --no-interaction --env=test
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install NPM dependencies
+        run: npm install
+
+      - name: Build assets
+        run: npm run build
+
       - name: Run Tests
         run: php bin/phpunit
