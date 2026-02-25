@@ -39,40 +39,64 @@ class SecurityPageTest extends WebTestCase
         $client = static::createClient();
         $container = static::getContainer();
 
+        //! 1. RÉCUPÉRATION DE L'UTILISATEUR
         $userRepository = $container->get(UserRepository::class);
         $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
-        $this->assertNotNull($testUser, "L'utilisateur test-ci@test.com est introuvable.");
+        $this->assertNotNull($testUser, "L'utilisateur test-ci@test.com est introuvable dans la base de test.");
         $client->loginUser($testUser);
 
+        //! 2. RÉCUPÉRATION DES ENTITÉS LIÉES
         $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
         $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
         $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
         
-        $this->assertNotNull($area, "La zone Toulouse est introuvable. Vérifie tes fixtures.");
+        $this->assertNotNull($wage, "Aucun salaire (WageScale) trouvé.");
+        $this->assertNotNull($skill, "Aucune compétence (Skill) trouvée.");
+        $this->assertNotNull($area, "La ville de Toulouse est introuvable dans les InterventionArea.");
 
+        //! 3. ACCÈS AU FORMULAIRE
         $crawler = $client->request('GET', '/create/mission');
         $this->assertResponseIsSuccessful();
 
-        $form = $crawler->selectButton('Publier la mission')->form();
+        $button = $crawler->selectButton('Publier la mission');
+        $form = $button->form();
 
-        // On utilise des valeurs ultra-simples pour bypasser les problèmes de Regex/Locale sur le CI
-        $client->submit($form, [
-            'add_mission[title]' => 'Menage de printemps',
-            'add_mission[description]' => 'Une description simple sans caracteres speciaux',
-            'add_mission[startAt]' => (new \DateTime('+2 days'))->format('Y-m-d\TH:i'),
-            'add_mission[endAt]' => (new \DateTime('+3 days'))->format('Y-m-d\TH:i'),
-            'add_mission[areaLocation]' => $area->getPostalCode().' - '.$area->getCity(),
-            'add_mission[wageScale]' => (string) $wage->getId(),
-            'add_mission[skills]' => [(string) $skill->getId()],
-        ]);
-
-        // --- LE DIAGNOSTIC ---
-        if (!$client->getResponse()->isRedirect()) {
-            // Si ça échoue, on extrait les erreurs du formulaire pour les voir dans le log GitHub
-            $errors = $client->getCrawler()->filter('.text-red-500, .invalid-feedback')->each(fn($n) => $n->text());
-            $this->fail("Le formulaire a échoué sur GitHub ! Erreurs trouvées : " . implode(' | ', $errors));
+        //! 4. SOUMISSION AVEC BLOC DE DIAGNOSTIC
+        try {
+            $client->submit($form, [
+                'add_mission[title]' => 'Menage de printemps',
+                'add_mission[description]' => 'Une description simple sans caracteres speciaux',
+                'add_mission[startAt]' => (new \DateTime('+2 days'))->format('Y-m-d\TH:i'),
+                'add_mission[endAt]' => (new \DateTime('+3 days'))->format('Y-m-d\TH:i'),
+                'add_mission[areaLocation]' => $area->getPostalCode().' - '.$area->getCity(),
+                'add_mission[wageScale]' => (string) $wage->getId(),
+                'add_mission[skills]' => [(string) $skill->getId()],
+            ]);
+        } catch (\Throwable $e) {
+            // Si le code PHP explose (erreur SQL, etc.), on verra le message ici
+            $this->fail("CRASH FATAL pendant le submit : " . $e->getMessage());
         }
 
+        $response = $client->getResponse();
+        
+        //! 5. ANALYSE DU RÉSULTAT
+        if (!$response->isRedirect()) {
+            // Affiche le début du HTML de l'erreur (pour voir si c'est une 500 ou des erreurs de validation)
+            echo "\n--- DEBUT DU CONTENU DE LA REPONSE ---\n";
+            echo substr($response->getContent(), 0, 2000); 
+            echo "\n--- FIN DU CONTENU ---\n";
+
+            // On essaie aussi d'extraire les messages d'erreurs classiques de Symfony
+            $errors = $client->getCrawler()->filter('.text-red-500, .invalid-feedback, .alert-danger')->each(fn($n) => $n->text());
+            
+            $this->fail(sprintf(
+                "Le formulaire n'a pas redirigé. Code HTTP : %d. Erreurs de validation trouvees : %s",
+                $response->getStatusCode(),
+                implode(' | ', $errors)
+            ));
+        }
+
+        // Si tout va bien, on vérifie la redirection
         $this->assertResponseRedirects('/show/mission');
     }
 

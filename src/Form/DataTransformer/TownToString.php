@@ -39,6 +39,7 @@ class TownToString implements DataTransformerInterface
         $newArea->setCity($city ?: 'Ville inconnue');
         
         $this->entityManager->persist($newArea);
+        $this->entityManager->flush();
         
         return $newArea;
     }
