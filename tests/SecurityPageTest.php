@@ -42,7 +42,7 @@ class SecurityPageTest extends WebTestCase
         //! 1. CONNEXION
         $userRepository = $container->get(UserRepository::class);
         $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
-        $this->assertNotNull($testUser, "User absent en CI");
+        $this->assertNotNull($testUser);
         $client->loginUser($testUser);
 
         //! 2. RÉCUPÉRATION DES DONNÉES NÉCESSAIRES
@@ -70,14 +70,14 @@ class SecurityPageTest extends WebTestCase
 
         //! 4. RECUPERATION DU FORMULAIRE
         // On récupère l'objet formulaire via le bouton de soumission
-        $form = $crawler->selectButton('Publier la mission')->form();
+        $form = $crawler->filter('form[name="add_mission"]')->form();
 
         //! 5. REMPLISSAGE DES CHAMPS
         // Pour les entités (WageScale, Skills), on doit passer l'ID ou l'index.
         $form['add_mission[title]'] = 'Nettoyage Bureaux Test';
         $form['add_mission[description]'] = 'Une description de plus de 10 caractères pour que la validation passe.';
-        $form['add_mission[startAt]'] = '2027-01-22T08:00';
-        $form['add_mission[endAt]'] = '2027-01-22T12:00';
+        $form['add_mission[startAt]'] = '2027-01-22T08:00:00';
+        $form['add_mission[endAt]'] = '2027-01-22T12:00:00';
         $form['add_mission[areaLocation]'] = '31500 Toulouse';
         $form['add_mission[wageScale]'] = (string)$wage->getId();
         $form['add_mission[skills]'] = [(string)$skill->getId()];
