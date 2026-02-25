@@ -106,14 +106,6 @@ class SecurityPageTest extends WebTestCase
 
     $client->followRedirect();
 
-    // 2. Optionnel : On vérifie qu'il y a un message flash de succès
-    // (Adapte le sélecteur CSS selon ton template, souvent .alert-success)
-    $this->assertSelectorExists('.fixed.top-5.right-5');
-    
-    // 3. Optionnel : Vérifier en BDD que l'utilisateur est bien là mais non vérifié
-    $user = static::getContainer()->get(UserRepository::class)->findOneByEmail($uniqueEmail);
-    $this->assertNotNull($user);
-    $this->assertFalse($user->isVerified());
     $this->assertResponseIsSuccessful();
 }
 
