@@ -35,73 +35,40 @@ class SecurityPageTest extends WebTestCase
      * Scénario pour la création d'une mission
      */
     public function testAddMissionSuccess(): void
-    {
-        $client = static::createClient();
-        $container = static::getContainer();
+{
+    $client = static::createClient();
+    $container = static::getContainer();
 
-        // --- ÉTAPE 1 : LOGIN ---
-        $userRepository = $container->get(UserRepository::class);
-        $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
-        if (!$testUser) {
-            dump("ERREUR : Utilisateur non trouvé");
-            die();
-        }
-        $client->loginUser($testUser);
+    // 1. Setup
+    $userRepository = $container->get(UserRepository::class);
+    $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
+    $client->loginUser($testUser);
 
-        // --- ÉTAPE 2 : RÉCUPÉRATION DATA ---
-        $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
-        $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
-        
-        if (!$area) {
-            dump("ERREUR : Toulouse non trouvé dans la DB");
-            die();
-        }
+    $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
+    $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
+    $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
 
-        // --- ÉTAPE 3 : ACCÈS PAGE ---
-        $crawler = $client->request('GET', '/create/mission');
-        dump("Statut page : " . $client->getResponse()->getStatusCode());
+    // 2. Requête
+    $crawler = $client->request('GET', '/create/mission');
+    
+    // 3. Soumission
+    $form = $crawler->selectButton('Publier la mission')->form();
+    
+    $client->submit($form, [
+        'add_mission[title]' => 'Nettoyage de printemps',
+        'add_mission[description]' => 'Une description de plus de dix caracteres pour la validation',
+        'add_mission[startAt]' => (new \DateTime('+2 days'))->format('Y-m-d\TH:i'),
+        'add_mission[endAt]' => (new \DateTime('+3 days'))->format('Y-m-d\TH:i'),
+        'add_mission[areaLocation]' => $area->getPostalCode().' - '.$area->getCity(),
+        'add_mission[wageScale]' => (string) $wage->getId(),
+        'add_mission[skills]' => [(string) $skill->getId()], // Remets le skill ici pour voir
+    ]);
 
-        // --- ÉTAPE 4 : LE FORMULAIRE ---
-        try {
-            $buttonCrawler = $crawler->selectButton('Publier la mission');
-            $form = $buttonCrawler->form();
-            dump("Formulaire trouvé !");
-        } catch (\Exception $e) {
-            dump("ERREUR : Bouton non trouvé -> " . $e->getMessage());
-            die();
-        }
-
-        // --- ÉTAPE 5 : SOUMISSION (Le point critique) ---
-        dump("Tentative de soumission...");
-        
-        // On utilise un try/catch pour attraper l'erreur SQL ou Symfony qui fait crasher le CI
-        try {
-            $client->submit($form, [
-                'add_mission[title]' => 'Menage de printemps',
-                'add_mission[description]' => 'Une description de plus de 10 caracteres',
-                'add_mission[startAt]' => (new \DateTime('+2 days'))->format('Y-m-d\TH:i'),
-                'add_mission[endAt]' => (new \DateTime('+3 days'))->format('Y-m-d\TH:i'),
-                'add_mission[areaLocation]' => $area->getPostalCode().' - '.$area->getCity(),
-                'add_mission[wageScale]' => (string) $wage->getId(),
-                'add_mission[skills]' => [], // On teste vide pour isoler le problème
-            ]);
-        } catch (\Throwable $t) {
-            dump("CRASH PENDANT SUBMIT : " . $t->getMessage());
-            dump("FICHIER : " . $t->getFile() . " Ligne : " . $t->getLine());
-            die(); 
-        }
-
-        dump("Soumission terminée sans crash fatal.");
-        
-        $response = $client->getResponse();
-        dump("Code HTTP après submit : " . $response->getStatusCode());
-        
-        if (!$response->isRedirect()) {
-            dump("Contenu de l'erreur (1000 chars) : " . substr($response->getContent(), 0, 1000));
-        }
-
-        $this->assertResponseRedirects('/show/mission');
-    }
+    // 4. Assertions finales
+    $this->assertResponseRedirects('/show/mission');
+    $client->followRedirect();
+    $this->assertSelectorTextContains('h1', 'Détails de la mission'); // Ou un titre présent sur ta page de succès
+}
 
     /**
      * Test d'inscription d'un user
