@@ -82,9 +82,10 @@ class SecurityPageTest extends WebTestCase
         $form['wageScale'] = (string)$wage->getId();
         $form['skills'] = [(string)$skill->getId()];
 
+        dump($form->getPhpValues());
         //! 5. ENVOI ET VÉRIFICATION
         $client->submit($form);
-        //dump($client->getResponse()->getContent());
+        dump($client->getResponse()->getContent());
 
         // On attend une redirection vers /home après le succès
         $this->assertResponseRedirects('/show/mission');
