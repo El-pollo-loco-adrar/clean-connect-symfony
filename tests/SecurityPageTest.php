@@ -95,16 +95,25 @@ class SecurityPageTest extends WebTestCase
     $form['registration_form[email]'] = $uniqueEmail;
     $form['registration_form[plainPassword]'] = 'Password1234!';
     $form['registration_form[user_type]'] = 'candidate';
-    $form['registration_form[agreeTerms]']->tick(); // Pour une checkbox
+    $form['registration_form[agreeTerms]'] = '1';
 
     // 3. On soumet l'objet form (il inclut le jeton CSRF tout seul !)
     $client->submit($form);
 
     // 4. On vérifie la redirection
     // Note : Vérifie si ta route est '/home' ou '/app_home' (l'URL, pas le nom de la route)
-    $this->assertResponseRedirects('/home'); 
+    $this->assertResponseRedirects('/');
 
     $client->followRedirect();
+
+    // 2. Optionnel : On vérifie qu'il y a un message flash de succès
+    // (Adapte le sélecteur CSS selon ton template, souvent .alert-success)
+    $this->assertSelectorExists('.fixed.top-5.right-5');
+    
+    // 3. Optionnel : Vérifier en BDD que l'utilisateur est bien là mais non vérifié
+    $user = static::getContainer()->get(UserRepository::class)->findOneByEmail($uniqueEmail);
+    $this->assertNotNull($user);
+    $this->assertFalse($user->isVerified());
     $this->assertResponseIsSuccessful();
 }
 
