@@ -10,25 +10,50 @@ class SecurityPageTest extends WebTestCase
     /**
      * Test connexion avec Employer
      */
-    public function testLoginSuccess(): void
-    {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/'); 
+    public function testAddMissionSuccess(): void
+{
+    $client = static::createClient();
+    $container = static::getContainer();
 
-        // 1. On remplit et soumet le formulaire
-        $client->submitForm('Se connecter', [
-            'email' => 'test-ci@test.com',
-            'password' => 'SuperPassWord123',
-        ]);
+    // 1. Setup
+    $userRepository = $container->get(UserRepository::class);
+    $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
+    $client->loginUser($testUser);
 
-        // 2. On vérifie la redirection
-        // Si ça échoue ici, PHPUnit affichera quand même une erreur détaillée
-        $this->assertResponseRedirects('/home');
+    $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
+    $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
+    $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
 
-        // 3. On suit la redirection pour vérifier que la page d'arrivée est OK
-        $client->followRedirect();
-        $this->assertResponseIsSuccessful();
+    // Sécurité CI : On vérifie que skill existe
+    $this->assertNotNull($skill, "Aucune compétence trouvée en base.");
+
+    // 2. Requête
+    $crawler = $client->request('GET', '/create/mission');
+    $form = $crawler->selectButton('Publier la mission')->form();
+    
+    // 3. Soumission avec Skills
+    $client->submit($form, [
+        'add_mission[title]' => 'Nettoyage de printemps',
+        'add_mission[description]' => 'Une description de plus de dix caracteres pour la validation',
+        'add_mission[startAt]' => (new \DateTime('+2 days'))->format('Y-m-d\TH:i'),
+        'add_mission[endAt]' => (new \DateTime('+3 days'))->format('Y-m-d\TH:i'),
+        'add_mission[areaLocation]' => $area->getPostalCode().' - '.$area->getCity(),
+        'add_mission[wageScale]' => (string) $wage->getId(),
+        // IMPORTANT : On force le passage en tableau de string
+        'add_mission[skills]' => [(string) $skill->getId()], 
+    ]);
+
+    // 4. Analyse si ça ne redirige pas (Le débugueur)
+    if (!$client->getResponse()->isRedirect()) {
+        $crawler = $client->getCrawler();
+        // On cherche spécifiquement l'erreur sur le champ skills
+        $skillErrors = $crawler->filter('label[for="add_mission_skills"]')->closest('div')->filter('.invalid-feedback')->each(fn($n) => $n->text());
+        
+        $this->fail("Erreur validation skills : " . implode(' | ', $skillErrors));
     }
+
+    $this->assertResponseRedirects('/show/mission');
+}
 
     /**
      * /
