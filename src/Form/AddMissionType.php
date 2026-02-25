@@ -30,6 +30,11 @@ class AddMissionType extends AbstractType
     {
         $this->entityManager= $entityManager;
     }
+
+    public function getName(): string
+    {
+        return 'add_mission';
+    }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
