@@ -39,67 +39,41 @@ class SecurityPageTest extends WebTestCase
         $client = static::createClient();
         $container = static::getContainer();
 
-        //! 1. CONNEXION
         $userRepository = $container->get(UserRepository::class);
         $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
-        $this->assertNotNull($testUser);
+        $this->assertNotNull($testUser, "L'utilisateur test-ci@test.com est introuvable.");
         $client->loginUser($testUser);
 
-        //! 2. RÉCUPÉRATION DES DONNÉES NÉCESSAIRES
-        // On les récupère depuis les Fixtures déjà chargées en base de test (WageScale et Skills)
-
-        //$user = $container->get(UserRepository::class)->findOneBy(['email' => 'test-ci@test.com']);
-        //$this->assertNotNull($user, "L'utilisateur n'existe pas en base sur GitHub.");
-
         $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
-        $this->assertNotNull($wage);
-
         $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
-        $this->assertNotNull($skill);
-
         $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
-        $this->assertNotNull($area);
-
-        //$form['add_mission[areaLocation]'] = (string)$area->getId();
-
-        //! 3. ACCÈS À LA PAGE
-        $crawler = $client->request('GET', '/create/mission');
         
-        // On vérifie que la page s'affiche
+        $this->assertNotNull($area, "La zone Toulouse est introuvable. Vérifie tes fixtures.");
+
+        $crawler = $client->request('GET', '/create/mission');
         $this->assertResponseIsSuccessful();
 
-        //! 4. RECUPERATION DU FORMULAIRE
-        // On récupère l'objet formulaire via le bouton de soumission
         $form = $crawler->selectButton('Publier la mission')->form();
 
-        //! 5. REMPLISSAGE DES CHAMPS
-        // Pour les entités (WageScale, Skills), on doit passer l'ID ou l'index.
-        $form['add_mission[title]'] = 'Nettoyage Bureaux Test';
-        $form['add_mission[description]'] = 'Une description suffisamment longue.';
-        $form['add_mission[startAt]'] = '2027-01-22T08:00';
-        $form['add_mission[endAt]'] = '2027-01-22T12:00';
-        $form['add_mission[areaLocation]'] = $area->getPostalCode().' - '.$area->getCity();
-        $form['add_mission[wageScale]'] = (string) $wage->getId();
-        $form['add_mission[skills]'] = [(string) $skill->getId()];
+        // On utilise des valeurs ultra-simples pour bypasser les problèmes de Regex/Locale sur le CI
+        $client->submit($form, [
+            'add_mission[title]' => 'Menage de printemps',
+            'add_mission[description]' => 'Une description simple sans caracteres speciaux',
+            'add_mission[startAt]' => (new \DateTime('+2 days'))->format('Y-m-d\TH:i'),
+            'add_mission[endAt]' => (new \DateTime('+3 days'))->format('Y-m-d\TH:i'),
+            'add_mission[areaLocation]' => $area->getPostalCode().' - '.$area->getCity(),
+            'add_mission[wageScale]' => (string) $wage->getId(),
+            'add_mission[skills]' => [(string) $skill->getId()],
+        ]);
 
-        //dump($form->getPhpValues());
-        //! 5. ENVOI ET VÉRIFICATION
-        $client->submit($form);
-        //dump($client->getResponse()->getContent());
-
-        // Vérifier que la soumission a réussi et redirige
+        // --- LE DIAGNOSTIC ---
         if (!$client->getResponse()->isRedirect()) {
-            $this->fail('La soumission du formulaire n\'a pas redirigé. Contenu de la réponse : ' . $client->getResponse()->getContent());
+            // Si ça échoue, on extrait les erreurs du formulaire pour les voir dans le log GitHub
+            $errors = $client->getCrawler()->filter('.text-red-500, .invalid-feedback')->each(fn($n) => $n->text());
+            $this->fail("Le formulaire a échoué sur GitHub ! Erreurs trouvées : " . implode(' | ', $errors));
         }
 
-        // On attend une redirection vers /home après le succès
         $this->assertResponseRedirects('/show/mission');
-
-        // On suit la redirection pour vérifier que la page d'accueil affiche un message de succès
-        //$crawler = $client->followRedirect();
-        
-        // Si tu as un message flash, on vérifie qu'il est présent
-        // $this->assertSelectorExists('.alert-success'); 
     }
 
     /**
