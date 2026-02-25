@@ -78,60 +78,35 @@ class SecurityPageTest extends WebTestCase
      * Test d'inscription d'un user
     */
     public function testRegistrationWorks():void
-    {
+{
+    $client = static::createClient();
+    $crawler = $client->request('GET', '/register');
 
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/register');
+    $this->assertResponseIsSuccessful();
 
-        $this->assertResponseIsSuccessful();
+    $uniqueEmail = 'user-' . uniqid() . '@test.com';
 
-        //! 1. On génère un email unique pour éviter l'erreur "Email déjà utilisé"
-        // uniqid() génère un identifiant basé sur l'heure actuelle
-        $uniqueEmail = 'user-' . uniqid() . '@test.com';
+    // 1. On sélectionne le bouton et on récupère l'objet Form
+    $buttonCrawlerNode = $crawler->selectButton("S'inscrire");
+    $form = $buttonCrawlerNode->form();
 
-        //! 2. On récupère le formulaire via le bouton
-        $form = $crawler->selectButton("S'inscrire")->form([
-            'registration_form[email]' => $uniqueEmail,
-            'registration_form[plainPassword]' => 'Password1234!',
-            'registration_form[user_type]' => 'candidate',
-            'registration_form[agreeTerms]' => 1,
-        ]);
+    // 2. On remplit les champs via l'objet form
+    // On utilise les ID ou les noms des champs
+    $form['registration_form[email]'] = $uniqueEmail;
+    $form['registration_form[plainPassword]'] = 'Password1234!';
+    $form['registration_form[user_type]'] = 'candidate';
+    $form['registration_form[agreeTerms]']->tick(); // Pour une checkbox
 
-        // 2. DEBUG : Si ça ne redirige pas, on veut savoir pourquoi !
-    if ($client->getResponse()->getStatusCode() !== 302) {
-        $html = $client->getCrawler()->html();
-        // On cherche les erreurs de validation Symfony
-        if (str_contains($html, 'invalid-feedback') || str_contains($html, 'text-red-500')) {
-             echo "\n[ERREUR VALIDATION] : Vérifiez les contraintes (mot de passe, email unique...)\n";
-        } else {
-             // C'est probablement une erreur 500 (le rôle manquant !)
-             echo "\n[ERREUR SERVEUR] : " . substr($client->getResponse()->getContent(), 0, 500) . "\n";
-        }
-    }
+    // 3. On soumet l'objet form (il inclut le jeton CSRF tout seul !)
+    $client->submit($form);
 
-    $this->assertResponseRedirects('/app_home');
+    // 4. On vérifie la redirection
+    // Note : Vérifie si ta route est '/home' ou '/app_home' (l'URL, pas le nom de la route)
+    $this->assertResponseRedirects('/home'); 
 
-        $client->submit($form);
-
-        if ($client->getResponse()->getStatusCode() !== 302) {
-            // On récupère les erreurs affichées en rouge (text-red-500 dans ton HTML)
-            $errors = $client->getCrawler()->filter('.text-red-500')->each(fn($n) => $n->text());
-            echo "\n[ERREUR FORMULAIRE] : " . implode(' | ', $errors) . "\n";
-        }
-
-        //! 3. Vérification de la redirection
-        $this->assertResponseRedirects('/home');
-
-        //! 4. On suit la redirection pour valider
-        $client->followRedirect();
-
-        // /home est protégé, le client est renvoyé vers /
-        if($client->getResponse()->isRedirect()){
-            $client->followRedirect();
-        }
-
-        $this->assertResponseIsSuccessful();
-    }
+    $client->followRedirect();
+    $this->assertResponseIsSuccessful();
+}
 
     /**
      * Test d'un utilisateur qui essaie d'accèder à la page /create/mission sans être connecté
