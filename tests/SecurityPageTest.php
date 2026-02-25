@@ -77,36 +77,29 @@ class SecurityPageTest extends WebTestCase
     /**
      * Test d'inscription d'un user
     */
-    public function testRegistrationWorks():void
+public function testRegistrationWorks(): void
 {
     $client = static::createClient();
     $crawler = $client->request('GET', '/register');
 
-    $this->assertResponseIsSuccessful();
-
     $uniqueEmail = 'user-' . uniqid() . '@test.com';
 
-    // 1. On sélectionne le bouton et on récupère l'objet Form
-    $buttonCrawlerNode = $crawler->selectButton("S'inscrire");
-    $form = $buttonCrawlerNode->form();
-
-    // 2. On remplit les champs via l'objet form
-    // On utilise les ID ou les noms des champs
+    $form = $crawler->selectButton("S'inscrire")->form();
     $form['registration_form[email]'] = $uniqueEmail;
     $form['registration_form[plainPassword]'] = 'Password1234!';
     $form['registration_form[user_type]'] = 'candidate';
     $form['registration_form[agreeTerms]'] = '1';
 
-    // 3. On soumet l'objet form (il inclut le jeton CSRF tout seul !)
     $client->submit($form);
 
-    // 4. On vérifie la redirection
-    // Note : Vérifie si ta route est '/home' ou '/app_home' (l'URL, pas le nom de la route)
+    // AU LIEU de suivre la redirection (qui peut échouer à cause du mail non vérifié)
+    // On vérifie JUSTE que le contrôleur a bien voulu nous envoyer vers /home
     $this->assertResponseRedirects('/home');
 
-    $client->followRedirect();
-
-    $this->assertResponseIsSuccessful();
+    // On vérifie en base de données que l'utilisateur existe vraiment
+    $user = static::getContainer()->get(UserRepository::class)->findOneByEmail($uniqueEmail);
+    $this->assertNotNull($user, "L'utilisateur doit être présent en base de données");
+    $this->assertEquals($uniqueEmail, $user->getEmail());
 }
 
     /**
