@@ -78,7 +78,7 @@ class SecurityPageTest extends WebTestCase
         $form['description'] = 'Une description de plus de 10 caractères pour que la validation passe.';
         $form['startAt'] = '2027-01-22T08:00:00';
         $form['endAt'] = '2027-01-22T12:00:00';
-        $form['areaLocation'] = $area->getPostalCode().' '.$area->getCity();
+        $form['areaLocation'] = $area->getPostalCode().' - '.$area->getCity();
         $form['wageScale'] = (string)$wage->getId();
         $form['skills'] = [(string)$skill->getId()];
 
