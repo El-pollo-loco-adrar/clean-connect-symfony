@@ -102,7 +102,7 @@ class SecurityPageTest extends WebTestCase
 
     // 4. On vérifie la redirection
     // Note : Vérifie si ta route est '/home' ou '/app_home' (l'URL, pas le nom de la route)
-    $this->assertResponseRedirects('/');
+    $this->assertResponseRedirects('/home');
 
     $client->followRedirect();
 
