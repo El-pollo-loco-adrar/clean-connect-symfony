@@ -70,17 +70,17 @@ class SecurityPageTest extends WebTestCase
 
         //! 4. RECUPERATION DU FORMULAIRE
         // On récupère l'objet formulaire via le bouton de soumission
-        $form = $crawler->filter('form[name="add_mission"]')->form();
+        $form = $crawler->selectButton('Publier la mission')->form();
 
         //! 5. REMPLISSAGE DES CHAMPS
         // Pour les entités (WageScale, Skills), on doit passer l'ID ou l'index.
-        $form['title'] = 'Nettoyage Bureaux Test';
-        $form['description'] = 'Une description de plus de 10 caractères pour que la validation passe.';
-        $form['startAt'] = '2027-01-22T08:00:00';
-        $form['endAt'] = '2027-01-22T12:00:00';
-        $form['areaLocation'] = $area->getPostalCode().' - '.$area->getCity();
-        $form['wageScale'] = (string)$wage->getId();
-        $form['skills'] = [(string)$skill->getId()];
+        $form['add_mission[title]'] = 'Nettoyage Bureaux Test';
+        $form['add_mission[description]'] = 'Une description suffisamment longue.';
+        $form['add_mission[startAt]'] = '2027-01-22T08:00';
+        $form['add_mission[endAt]'] = '2027-01-22T12:00';
+        $form['add_mission[areaLocation]'] = $area->getPostalCode().' - '.$area->getCity();
+        $form['add_mission[wageScale]'] = (string) $wage->getId();
+        $form['add_mission[skills]'] = [(string) $skill->getId()];
 
         dump($form->getPhpValues());
         //! 5. ENVOI ET VÉRIFICATION
