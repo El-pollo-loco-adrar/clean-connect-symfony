@@ -107,7 +107,7 @@ php bin/console --env=test doctrine:fixtures:load --no-interaction
 ```
 Lancer les test unitaires
 ```bash
-php bin/phpunit
+php bin/phpunit tests/SecurityPageTest.php
 ```
 
 ### Changer l'adresse de la bdd
