@@ -80,3 +80,10 @@ jobs:
 
       - name: Run Tests
         run: php bin/phpunit
+
+      - name: Upload Screenshots on Failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: panther-screenshots
+          path: '*.png'

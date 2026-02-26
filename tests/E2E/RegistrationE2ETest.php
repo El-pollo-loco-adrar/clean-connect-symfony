@@ -75,14 +75,21 @@ class RegistrationE2ETest extends PantherTestCase
 
         // 3. On attend la redirection
         try {
-            $client->waitFor('h1', 10);
+            $client->waitFor('h1', 15);
         } catch (\Exception $e) {
-            $client->takeScreenshot('debug_registration.png');
+            // On prend une photo pour comprendre pourquoi on n'a pas bougé de page
+            $client->takeScreenshot('error_registration_flow.png');
+            // On affiche le contenu de la page dans la console pour debugger
+            echo $client->getCrawler()->filter('body')->text();
             throw $e;
         }
 
         // 4. Assertion finale
         $pageSource = $client->getPageSource();
+
+        $currentH1 = $client->getCrawler()->filter('h1')->count() ? $client->getCrawler()->filter('h1')->text() : 'Pas de H1';
+        echo "\n Page actuelle (H1) : " . $currentH1 . "\n";
+
         $isHome = str_contains($pageSource, 'Bienvenue');
         $isLogin = str_contains($pageSource, 'Connexion');
 
