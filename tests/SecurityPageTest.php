@@ -10,10 +10,10 @@ class SecurityPageTest extends WebTestCase
     /**
      * Test connexion avec Employer
      */
-    public function testLoginSuccess(): void
+    public function testLoginEmployerSuccess(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/'); 
+        $crawler = $client->request('GET', '/');
 
         // 1. On remplit et soumet le formulaire
         $client->submitForm('Se connecter', [
@@ -30,77 +30,55 @@ class SecurityPageTest extends WebTestCase
         $this->assertResponseIsSuccessful();
     }
 
-    /**
-     * /
-     * Scénario pour la création d'une mission
+    /***
+     * Test connexion avec Candidate
      */
-// public function testAddMissionSuccess(): void
-// {
-//     $client = static::createClient();
-//     $container = static::getContainer();
+    public function testLoginCandidateSuccess(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/');
 
-//     // 1. Authentification
-//     $userRepository = $container->get(UserRepository::class);
-//     $testUser = $userRepository->findOneBy(['email' => 'test-ci@test.com']);
-//     $client->loginUser($testUser);
+        // 1. On remplit le formulaire
+        $client->submitForm('Se connecter', [
+            'email' => 'test-c@test.com',
+            'password' => 'SuperPassWord456',
+        ]);
 
-//     // 2. Data
-//     $wage = $container->get(\App\Repository\WageScaleRepository::class)->findOneBy([]);
-//     $skill = $container->get(\App\Repository\SkillsRepository::class)->findOneBy([]);
-//     $area = $container->get(\App\Repository\InterventionAreaRepository::class)->findOneBy(['city' => 'Toulouse']);
+        // 2. On vérifie la redirection
+        $this->assertResponseRedirects('/home');
 
-//     // 3. Récupération du formulaire
-//     $crawler = $client->request('GET', '/create/mission');
-//     $form = $crawler->selectButton('Publier la mission')->form();
-
-//     // 4. On prépare les valeurs
-//     $values = $form->getPhpValues(); // On récupère les valeurs par défaut (dont le Token CSRF !)
-
-//     // On injecte manuellement nos données dans le tableau
-//     $values['add_mission']['title'] = 'Menage Pro';
-//     $values['add_mission']['description'] = 'Une description de plus de dix caractères';
-//     $values['add_mission']['startAt'] = (new \DateTime('+7 days'))->format('Y-m-d\TH:i');
-//     $values['add_mission']['endAt'] = (new \DateTime('+8 days'))->format('Y-m-d\TH:i');
-//     $values['add_mission']['areaLocation'] = $area->getPostalCode().' - '.$area->getCity();
-//     $values['add_mission']['wageScale'] = (string) $wage->getId();
-    
-//     // Pour les compétences (EntityType multiple + expanded), Symfony attend un tableau d'IDs
-//     $values['add_mission']['skills'] = [(string) $skill->getId()];
-
-//     // 5. Soumission forcée
-//     $client->request($form->getMethod(), $form->getUri(), $values);
-
-//     // 6. Vérification
-//     $this->assertResponseRedirects('/show/mission');
-// }
+        // 3. On suit la redirection pour vérifier que la page d'arrivée est ok
+        $client->followRedirect();
+        $this->assertResponseIsSuccessful();
+    }
 
     /**
      * Test d'inscription d'un user
     */
-public function testRegistrationWorks(): void
-{
-    $client = static::createClient();
-    $crawler = $client->request('GET', '/register');
+    public function testRegistrationWorks(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/register');
 
-    $uniqueEmail = 'user-' . uniqid() . '@test.com';
+        $uniqueEmail = 'user-' . uniqid() . '@test.com';
 
-    $form = $crawler->selectButton("S'inscrire")->form();
-    $form['registration_form[email]'] = $uniqueEmail;
-    $form['registration_form[plainPassword]'] = 'Password1234!';
-    $form['registration_form[user_type]'] = 'candidate';
-    $form['registration_form[agreeTerms]'] = '1';
+        $form = $crawler->selectButton("S'inscrire")->form();
+        $form['registration_form[email]'] = $uniqueEmail;
+        $form['registration_form[plainPassword]'] = 'Password1234!';
+        $form['registration_form[user_type]'] = 'candidate';
+        $form['registration_form[agreeTerms]'] = '1';
 
-    $client->submit($form);
+        $client->submit($form);
 
-    // AU LIEU de suivre la redirection (qui peut échouer à cause du mail non vérifié)
-    // On vérifie JUSTE que le contrôleur a bien voulu nous envoyer vers /home
-    $this->assertResponseRedirects('/home');
+        // AU LIEU de suivre la redirection (qui peut échouer à cause du mail non vérifié)
+        // On vérifie JUSTE que le contrôleur a bien voulu nous envoyer vers /home
+        $this->assertResponseRedirects('/home');
 
-    // On vérifie en base de données que l'utilisateur existe vraiment
-    $user = static::getContainer()->get(UserRepository::class)->findOneByEmail($uniqueEmail);
-    $this->assertNotNull($user, "L'utilisateur doit être présent en base de données");
-    $this->assertEquals($uniqueEmail, $user->getEmail());
-}
+        // On vérifie en base de données que l'utilisateur existe vraiment
+        $user = static::getContainer()->get(UserRepository::class)->findOneByEmail($uniqueEmail);
+        $this->assertNotNull($user, "L'utilisateur doit être présent en base de données");
+        $this->assertEquals($uniqueEmail, $user->getEmail());
+    }
 
     /**
      * Test d'un utilisateur qui essaie d'accèder à la page /create/mission sans être connecté
