@@ -33,6 +33,7 @@ Enlever le ";" des lignes suivantes :
 extension=pdo_mysql
 extension=intl
 extension=mbstring
+extension=zip
 ```
 
 ### Installer les dépendances PHP
@@ -108,6 +109,12 @@ php bin/console --env=test doctrine:fixtures:load --no-interaction
 Lancer les test unitaires
 ```bash
 php bin/phpunit tests/SecurityPageTest.php
+```
+Symfony Panther (Le choix "Full PHP")
+
+C'est un outil créé par l'équipe Symfony. Il s'utilise presque comme tes tests actuels, mais il lance un vrai navigateur en arrière-plan.
+```bash
+composer require --dev symfony/panther
 ```
 
 ### Changer l'adresse de la bdd
