@@ -7,20 +7,46 @@ use Symfony\Component\Panther\Client;
 
 class RegistrationE2ETest extends PantherTestCase
 {
-    public function testRegistrationWithBrowser(): void
+    /**
+     * Cette fonction crée un client adapté à l'OS (Windows ou Linux)
+     */
+    private function createCustomClient(): Client
     {
-        $chromeDriverBinary = realpath(__DIR__ . '/../../drivers/chromedriver.exe');
-        
-        $client = Client::createChromeClient($chromeDriverBinary, null, [
+        $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+
+        if ($isWindows) {
+            // Config pour ton PC Windows (Chrome)
+            $chromeDriverBinary = realpath(__DIR__ . '/../../drivers/chromedriver.exe');
+            return Client::createChromeClient($chromeDriverBinary, null, [
+                'external_base_uri' => 'http://127.0.0.1:8000',
+                'manage_server' => false,
+                'extra_capabilities' => [
+                    'goog:chromeOptions' => [
+                        'args' => [
+                            '--window-size=1200,1000',
+                            '--remote-allow-origins=*',
+                            '--disable-gpu',
+                        ],
+                    ],
+                ],
+            ]);
+        }
+
+        // Config pour ton PC Linux Debian ou GitHub Actions (Firefox)
+        // On laisse null car geckodriver est dans /usr/local/bin
+        return Client::createFirefoxClient(null, null, [
             'external_base_uri' => 'http://127.0.0.1:8000',
             'manage_server' => false,
         ]);
+    }
+
+    public function testRegistrationWithBrowser(): void
+    {
+        $client = $this->createCustomClient();
 
         $client->request('GET', 'http://127.0.0.1:8000/register');
 
-        // Au lieu d'utiliser $this->assertSelectorTextContains(...),
-        // on va chercher l'élément manuellement via le client pour contourner le bug
-        $crawler = $client->waitFor('h1'); // On attend que le h1 apparaisse
+        $crawler = $client->waitFor('h1');
         $h1Text = $crawler->filter('h1')->text();
 
         $this->assertStringContainsString('Inscription', $h1Text);
@@ -30,23 +56,7 @@ class RegistrationE2ETest extends PantherTestCase
 
     public function testRegistrationFlow(): void
     {
-        $chromeDriverBinary = realpath(__DIR__ . '/../../drivers/chromedriver.exe');
-        $client = Client::createChromeClient($chromeDriverBinary, null, [
-            'external_base_uri' => 'http://127.0.0.1:8000',
-            'manage_server' => false,
-            'extra_capabilities' => [
-                'goog:chromeOptions' => [
-                    'args' => [
-                        '--window-size=1200,1000',
-                        '--auto-open-devtools-for-tabs', // Force l'ouverture des outils dev (donc de la fenêtre)
-                        '--remote-allow-origins=*',
-                        '--disable-gpu',
-                    ],
-                    // On demande explicitement à Chrome de ne pas être en mode fantôme
-                    'excludeSwitches' => ['enable-automation'],
-                ],
-            ],
-        ]);
+        $client = $this->createCustomClient();
 
         $crawler = $client->request('GET', 'http://127.0.0.1:8000/register');
 
@@ -61,24 +71,18 @@ class RegistrationE2ETest extends PantherTestCase
             'registration_form[agreeTerms]' => true,
         ]);
 
-        
         sleep(3);
 
-
-        // 3. On attend la redirection vers la home
-        // On utilise 'h1' car il contient "Bienvenue" dans ton template
+        // 3. On attend la redirection
         try {
             $client->waitFor('h1', 10);
         } catch (\Exception $e) {
-            // Si ça échoue, on sauvegarde l'image pour comprendre pourquoi (ex: erreur de mot de passe)
             $client->takeScreenshot('debug_registration.png');
             throw $e;
         }
 
-        // 4. Assertion finale : On vérifie si on est au moins sur une page connue
+        // 4. Assertion finale
         $pageSource = $client->getPageSource();
-        
-        // On accepte soit la Home (Bienvenue) soit le Login (Connexion)
         $isHome = str_contains($pageSource, 'Bienvenue');
         $isLogin = str_contains($pageSource, 'Connexion');
 
