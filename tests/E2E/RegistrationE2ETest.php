@@ -71,43 +71,32 @@ class RegistrationE2ETest extends PantherTestCase
             'registration_form[agreeTerms]' => true,
         ]);
 
-        sleep(3);
+        sleep(2);
 
-        // 3. On attend la redirection
-        try {
-            $client->waitFor('h1', 15);
-        } catch (\Exception $e) {
-            // 1. On affiche le texte brut de la page d'erreur Symfony dans la console
-            echo "\n --- DEBUT DU DEBUG ERREUR --- \n";
-            try {
-                // On cherche le message d'exception spécifique de Symfony
-                echo "MESSAGE : " . $client->getCrawler()->filter('.exception-message')->text() . "\n";
-            } catch (\Exception $inner) {
-                echo "CONTENU COMPLET : " . $client->getCrawler()->filter('body')->text() . "\n";
-            }
-            echo "\n --- FIN DU DEBUG ERREUR --- \n";
-
-            // 2. On force la capture d'écran dans le dossier courant de GitHub
-            $client->takeScreenshot(getcwd() . '/error_registration.png');
-            
-            throw $e;
-        }
-
-        // 4. Assertion finale
+        $crawler = $client->refreshCrawler();
         $pageSource = $client->getPageSource();
+        $h1Exists = $crawler->filter('h1')->count() > 0;
+        $h1Text = $h1Exists ? $crawler->filter('h1')->text() : 'PAS DE H1';
 
-        $currentH1 = $client->getCrawler()->filter('h1')->count() ? $client->getCrawler()->filter('h1')->text() : 'Pas de H1';
-        echo "\n Page actuelle (H1) : " . $currentH1 . "\n";
+        // SI ON EST SUR UNE PAGE D'EXCEPTION
+        if (str_contains($h1Text, 'Exception') || str_contains($h1Text, 'Error')) {
+            echo "\n --- !!! ERREUR SYMFONY DETECTEE !!! --- \n";
+            echo "TITRE H1 : " . $h1Text . "\n";
+            try {
+                // On essaie de choper le message d'erreur spécifique dans la div de debug de Symfony
+                $errorMsg = $crawler->filter('.exception-message')->count() ? $crawler->filter('.exception-message')->text() : 'Message non trouvé';
+                echo "MESSAGE D'ERREUR : " . $errorMsg . "\n";
+            } catch (\Exception $e) {
+                echo "DETAIL : Impossible d'extraire le message précis.\n";
+            }
+            echo "--- FIN DU DEBUG --- \n";
+            
+            $client->takeScreenshot(getcwd() . '/error_registration.png');
+        }
 
         $isHome = str_contains($pageSource, 'Bienvenue');
         $isLogin = str_contains($pageSource, 'Connexion');
 
-        $this->assertTrue($isHome || $isLogin, "Le navigateur n'est ni sur la Home ni sur le Login.");
-
-        if ($isLogin) {
-            echo "\n Inscription réussie, redirection vers Connexion. \n";
-        } else {
-            echo "\n Inscription réussie, redirection vers Accueil. \n";
-        }
+        $this->assertTrue($isHome || $isLogin, "Echec : Le navigateur est sur la page '$h1Text' au lieu de la Home/Login.");
     }
 }
