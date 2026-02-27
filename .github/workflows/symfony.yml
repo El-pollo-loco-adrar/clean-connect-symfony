@@ -79,6 +79,9 @@ jobs:
         # On attend quelques secondes que le serveur réponde
         run: sleep 5
 
+      - name: Clear Cache
+        run: php bin/console cache:clear --env=test
+
       - name: Run Tests
         run: php bin/phpunit
 
