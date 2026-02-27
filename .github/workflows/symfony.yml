@@ -73,7 +73,9 @@ jobs:
 
       - name: Start Symfony Server
         # On injecte explicitement la DATABASE_URL pour que le serveur web la connaisse
-        run: DATABASE_URL="mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0" php -S 127.0.0.1:8000 -t public &
+        run: |
+          export DATABASE_URL="mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0"
+          php -S 127.0.0.1:8000 -t public &
 
       - name: Wait for server
         run: sleep 5
