@@ -40,18 +40,44 @@ class RegistrationE2ETest extends PantherTestCase
         ]);
     }
 
+    // public function testRegistrationWithBrowser(): void
+    // {
+    //     $client = $this->createCustomClient();
+
+    //     $client->request('GET', 'http://127.0.0.1:8000/register');
+
+    //     $crawler = $client->waitFor('h1');
+    //     $h1Text = $crawler->filter('h1')->text();
+
+    //     $this->assertStringContainsString('Inscription', $h1Text);
+        
+    //     echo "\n Succès ! Le titre trouvé est : " . $h1Text . "\n";
+    // }
+
     public function testRegistrationWithBrowser(): void
     {
         $client = $this->createCustomClient();
 
-        $client->request('GET', 'http://127.0.0.1:8000/register');
+        $crawler = $client->request('GET', 'http://127.0.0.1:8000/register');
 
-        $crawler = $client->waitFor('h1');
-        $h1Text = $crawler->filter('h1')->text();
+        // On vérifie tout de suite si on a un H1, même si c'est une erreur
+        $h1Text = $crawler->filter('h1')->count() > 0 ? $crawler->filter('h1')->text() : 'Pas de H1';
 
-        $this->assertStringContainsString('Inscription', $h1Text);
-        
-        echo "\n Succès ! Le titre trouvé est : " . $h1Text . "\n";
+        // Si on tombe sur une page d'erreur Symfony
+        if (str_contains($h1Text, 'Exception') || str_contains($h1Text, 'Error')) {
+            echo "\n --- ERREUR AU CHARGEMENT DE LA PAGE REGISTER --- \n";
+            try {
+                echo "MESSAGE : " . $crawler->filter('.exception-message')->text() . "\n";
+            } catch (\Exception $e) {
+                echo "DÉTAIL INTROUVABLE. Voici le body : \n" . substr($crawler->filter('body')->text(), 0, 300) . "\n";
+            }
+            
+            // On force le screenshot de l'erreur
+            $client->takeScreenshot(getcwd() . '/error_load_register.png');
+        }
+
+        // Si c'est bien la bonne page, ça passera
+        $this->assertStringContainsString('Inscription', $h1Text, "La page n'a pas chargé correctement.");
     }
 
     public function testRegistrationFlow(): void

@@ -53,11 +53,11 @@ jobs:
             sleep 2
           done
 
-      # --- ETAPE CRUCIALE : On force la config dans un fichier physique ---
       - name: Force Environment Variables for Web Server
         run: |
           echo 'APP_ENV=test' > .env.local
           echo 'APP_DEBUG=1' >> .env.local
+          echo 'APP_SECRET=67d3b0c95805e254e4277b902e1c9d82' >> .env.local
           echo 'DATABASE_URL="mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0"' >> .env.local
           echo 'MESSENGER_TRANSPORT_DSN="in-memory://"' >> .env.local
           echo 'MAILER_DSN="null://null"' >> .env.local
