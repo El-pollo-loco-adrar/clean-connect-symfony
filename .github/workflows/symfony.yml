@@ -17,7 +17,7 @@ jobs:
       DATABASE_URL: mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0
       DEFAULT_URI: http://localhost
       #MESSENGER_TRANSPORT_DSN: doctrine://default
-      MESSENGER_TRANSPORT_DSN: sync
+      MESSENGER_TRANSPORT_DSN: in-memory://
       MAILER_DSN: null://null
 
     services:
@@ -56,9 +56,9 @@ jobs:
 
       - name: Prepare Database
         run: |
-          php bin/console doctrine:database:create --if-not-exists --env=test
-          php bin/console doctrine:schema:create --env=test
-          php bin/console doctrine:fixtures:load --no-interaction --env=test
+          php bin/console doctrine:database:create --if-not-exists
+          php bin/console doctrine:schema:create
+          php bin/console doctrine:fixtures:load --no-interaction
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
