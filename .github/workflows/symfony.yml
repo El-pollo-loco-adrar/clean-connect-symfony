@@ -16,7 +16,6 @@ jobs:
       APP_SECRET: 67d3b0c95805e254e4277b902e1c9d82
       DATABASE_URL: mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0
       DEFAULT_URI: http://localhost
-      #MESSENGER_TRANSPORT_DSN: doctrine://default
       MESSENGER_TRANSPORT_DSN: in-memory://
       MAILER_DSN: null://null
 
@@ -54,6 +53,12 @@ jobs:
             sleep 2
           done
 
+      # --- ETAPE CRUCIALE : On force la config dans un fichier physique ---
+      - name: Create .env.test.local
+        run: |
+          echo 'DATABASE_URL="mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0"' > .env.test.local
+          echo 'MESSENGER_TRANSPORT_DSN="in-memory://"' >> .env.test.local
+
       - name: Prepare Database
         run: |
           php bin/console doctrine:database:create --if-not-exists
@@ -72,14 +77,13 @@ jobs:
         run: npm run build
 
       - name: Start Symfony Server
-        # On injecte explicitement la DATABASE_URL pour que le serveur web la connaisse
-        run: |
-          export DATABASE_URL="mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0"
-          php -S 127.0.0.1:8000 -t public &
+        # Le serveur va maintenant lire obligatoirement .env.test.local au démarrage
+        run: php -S 127.0.0.1:8000 -t public &
 
       - name: Wait for server
         run: sleep 5
 
+      # On nettoie le cache APRES avoir créé le fichier .env.test.local
       - name: Clear Cache
         run: php bin/console cache:clear --env=test
 
