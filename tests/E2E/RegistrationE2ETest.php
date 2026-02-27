@@ -78,9 +78,14 @@ class RegistrationE2ETest extends PantherTestCase
             $client->waitFor('h1', 15);
         } catch (\Exception $e) {
             // On prend une photo pour comprendre pourquoi on n'a pas bougé de page
-            $client->takeScreenshot('error_registration_flow.png');
-            // On affiche le contenu de la page dans la console pour debugger
-            echo $client->getCrawler()->filter('body')->text();
+            // On récupère tout le texte de la page d'erreur
+            $exceptionText = $client->getCrawler()->filter('body')->text();
+            echo "\n --- DEBUT DE L'ERREUR SYMFONY --- \n";
+            echo $exceptionText;
+            echo "\n --- FIN DE L'ERREUR SYMFONY --- \n";
+            
+            // On essaie quand même la capture avec un chemin absolu pour GitHub
+            $client->takeScreenshot(getcwd().'/error_registration_flow.png');
             throw $e;
         }
 
