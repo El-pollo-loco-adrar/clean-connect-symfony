@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260218154056 extends AbstractMigration
+final class Version20260302064326 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -31,6 +31,7 @@ final class Version20260218154056 extends AbstractMigration
         $this->addSql('CREATE TABLE message (id INT AUTO_INCREMENT NOT NULL, author_id INT NOT NULL, recipent_id INT DEFAULT NULL, conversation_id INT NOT NULL, content LONGTEXT NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', is_read TINYINT(1) NOT NULL, INDEX IDX_B6BD307FF675F31B (author_id), INDEX IDX_B6BD307FBF433F1C (recipent_id), INDEX IDX_B6BD307F9AC0396 (conversation_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE mission (id INT AUTO_INCREMENT NOT NULL, wage_scale_id INT DEFAULT NULL, area_location_id INT DEFAULT NULL, employer_id INT DEFAULT NULL, title VARCHAR(100) NOT NULL, description LONGTEXT NOT NULL, start_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', end_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_9067F23CADD43BA (wage_scale_id), INDEX IDX_9067F23C2D768BFE (area_location_id), INDEX IDX_9067F23C41CD9E7A (employer_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE mission_skills (mission_id INT NOT NULL, skills_id INT NOT NULL, INDEX IDX_8DC9CC3EBE6CAE90 (mission_id), INDEX IDX_8DC9CC3E7FF61858 (skills_id), PRIMARY KEY(mission_id, skills_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE reset_password_request (id INT AUTO_INCREMENT NOT NULL, user_id INT NOT NULL, selector VARCHAR(20) NOT NULL, hashed_token VARCHAR(100) NOT NULL, requested_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', expires_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_7CE748AA76ED395 (user_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE role (id INT AUTO_INCREMENT NOT NULL, name_role VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE skill_category (id INT AUTO_INCREMENT NOT NULL, name_category VARCHAR(100) NOT NULL, UNIQUE INDEX UNIQ_44E474332A9DEC0F (name_category), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE skills (id INT AUTO_INCREMENT NOT NULL, skill_category_id INT NOT NULL, name_skill VARCHAR(100) NOT NULL, INDEX IDX_D5311670AC58042E (skill_category_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -59,6 +60,7 @@ final class Version20260218154056 extends AbstractMigration
         $this->addSql('ALTER TABLE mission ADD CONSTRAINT FK_9067F23C41CD9E7A FOREIGN KEY (employer_id) REFERENCES employer (id)');
         $this->addSql('ALTER TABLE mission_skills ADD CONSTRAINT FK_8DC9CC3EBE6CAE90 FOREIGN KEY (mission_id) REFERENCES mission (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE mission_skills ADD CONSTRAINT FK_8DC9CC3E7FF61858 FOREIGN KEY (skills_id) REFERENCES skills (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE reset_password_request ADD CONSTRAINT FK_7CE748AA76ED395 FOREIGN KEY (user_id) REFERENCES `user` (id)');
         $this->addSql('ALTER TABLE skills ADD CONSTRAINT FK_D5311670AC58042E FOREIGN KEY (skill_category_id) REFERENCES skill_category (id)');
         $this->addSql('ALTER TABLE `user` ADD CONSTRAINT FK_8D93D649D60322AC FOREIGN KEY (role_id) REFERENCES role (id)');
     }
@@ -87,6 +89,7 @@ final class Version20260218154056 extends AbstractMigration
         $this->addSql('ALTER TABLE mission DROP FOREIGN KEY FK_9067F23C41CD9E7A');
         $this->addSql('ALTER TABLE mission_skills DROP FOREIGN KEY FK_8DC9CC3EBE6CAE90');
         $this->addSql('ALTER TABLE mission_skills DROP FOREIGN KEY FK_8DC9CC3E7FF61858');
+        $this->addSql('ALTER TABLE reset_password_request DROP FOREIGN KEY FK_7CE748AA76ED395');
         $this->addSql('ALTER TABLE skills DROP FOREIGN KEY FK_D5311670AC58042E');
         $this->addSql('ALTER TABLE `user` DROP FOREIGN KEY FK_8D93D649D60322AC');
         $this->addSql('DROP TABLE availability');
@@ -100,6 +103,7 @@ final class Version20260218154056 extends AbstractMigration
         $this->addSql('DROP TABLE message');
         $this->addSql('DROP TABLE mission');
         $this->addSql('DROP TABLE mission_skills');
+        $this->addSql('DROP TABLE reset_password_request');
         $this->addSql('DROP TABLE role');
         $this->addSql('DROP TABLE skill_category');
         $this->addSql('DROP TABLE skills');

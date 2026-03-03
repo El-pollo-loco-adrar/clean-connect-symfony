@@ -112,11 +112,14 @@ php -S 127.0.0.1:8000 -t public
 
 ### 3. Lancer les tests
 ```bash
-# Tous les tests
-php bin/phpunit
+# Tests fonctionnels
+php bin/phpunit tests/SecurityPageTest.php
 
 # Uniquement les tests E2E (Navigateur)
 php bin/phpunit tests/E2E/RegistrationE2ETest.php
+
+# Tous les tests
+php bin/phpunit tests/E2E/RegistrationE2ETest.php tests/SecurityPageTest.php
 ```
 
 ## ▶️ Lancer le projet en développement

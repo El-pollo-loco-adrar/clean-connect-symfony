@@ -105,4 +105,13 @@ class Conversation
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return sprintf('Conv #%d : %s vs %s',
+            $this->id,
+            $this->candidate ? $this->candidate->getEmail() : 'Inconnu',
+            $this->employer ? $this->employer->getCompanyName() : 'Inconnu'
+        );
+    }
 }

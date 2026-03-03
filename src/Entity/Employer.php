@@ -110,7 +110,11 @@ class Employer extends User
                 $employer->setEmployer(null);
             }
         }
-
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->getCompanyName() ?? 'Entreprise inconnue';
     }
 }
