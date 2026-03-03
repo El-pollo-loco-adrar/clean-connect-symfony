@@ -162,4 +162,13 @@ class Candidate extends User
 
         return $this;
     }
+
+        public function __toString(): string
+    {
+        if ($this->getFirstname() || $this->getLastname())
+            {
+                return trim(($this->getFirstname() ?? '') . ' ' . ($this->getLastname()));
+            }
+        return $this->getEmail() ?? 'Candidat sans nom';
+    }
 }

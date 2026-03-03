@@ -258,4 +258,19 @@ class User implements \Symfony\Component\Security\Core\User\UserInterface,
 
         return $this;
     }
+
+    public function __toString()
+    {
+        if($this instanceof Employer && $this->getCompanyName())
+            {
+                return $this->getCompanyName();
+            }
+        if ($this->firstname || $this->lastname)
+            {
+                return trim(($this->firstname ?? '') . ' ' . ($this->lastname ?? ''));
+            }
+
+        return $this->email ?? 'Utilisateur inconnu';
+        
+    }
 }

@@ -1,0 +1,8 @@
+{# Badge pour afficher les skills dans une mission que l'ADMIN consulte #}
+{% for skill in field.value %}
+    <span class="badge badge-info" style="background-color: #2563eb; color: white; padding: 5px 10px; border-radius: 5px; margin-right: 5px; border: 1px solid black;">
+        {{ skill.nameSkill }}
+    </span>
+{% else %}
+    <span class="text-muted">Aucune compétence requise</span>
+{% endfor %}

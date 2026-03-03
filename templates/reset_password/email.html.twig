@@ -1,0 +1,43 @@
+{# <h1>Hi!</h1>
+
+<p>To reset your password, please visit the following link</p>
+
+<a href="{{ url('app_reset_password', {token: resetToken.token}) }}">{{ url('app_reset_password', {token: resetToken.token}) }}</a>
+
+<p>This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.</p>
+
+<p>Cheers!</p> #}
+
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 2px solid #000000; border-radius: 15px; overflow: hidden; background-color: #F3F4F6;">
+    <div style="background-color: #2563EB; padding: 20px; text-align: center; border-bottom: 2px solid #000000;">
+        <h1 style="color: #ffffff; margin: 0; text-transform: uppercase; letter-spacing: 2px;">Clean Connect</h1>
+    </div>
+
+    <div style="padding: 30px; color: #1F2937; line-height: 1.6;">
+        <h2 style="margin-top: 0;">Bonjour,</h2>
+        
+        <p>Vous avez demandé la réinitialisation de votre mot de passe pour votre compte <strong>Clean Connect</strong>.</p>
+        
+        <p>Pour choisir un nouveau mot de passe, cliquez simplement sur le bouton ci-dessous :</p>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="{{ url('app_reset_password', {token: resetToken.token}) }}" 
+                style="background-color: #2563EB; color: #ffffff; padding: 15px 30px; text-decoration: none; font-weight: bold; border: 2px solid #000000; border-radius: 4px; display: inline-block;">
+                    RÉINITIALISER MON MOT DE PASSE
+            </a>
+        </div>
+
+        <p style="background-color: #DBEAFE; padding: 15px; border-left: 4px solid #2563EB; font-size: 14px;">
+            <strong>Note :</strong> Ce lien est valable pendant <strong>{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</strong>.
+        </p>
+
+        <p>Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute sécurité. Votre mot de passe actuel ne sera pas modifié.</p>
+        
+        <hr style="border: 0; border-top: 1px solid #D1D5DB; margin: 30px 0;">
+        
+        <p style="font-size: 12px; color: #6B7280; text-align: center;">
+            Ceci est un message automatique, merci de ne pas y répondre.<br>
+            &copy; 2026 Clean Connect
+        </p>
+    </div>
+</div>
