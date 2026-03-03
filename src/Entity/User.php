@@ -273,4 +273,20 @@ class User implements \Symfony\Component\Security\Core\User\UserInterface,
         return $this->email ?? 'Utilisateur inconnu';
         
     }
+
+    // Vérifie si le profil est complet
+    public function isProfilComplete(): bool
+    {
+        if(empty($this->firstname) || empty($this->lastname) || empty($this->phoneNumber))
+            {
+                return false;
+            }
+        
+        if($this instanceof Employer && empty($this->getCompanyName()))
+            {
+                return false;
+            }
+
+        return true;
+    }
 }
