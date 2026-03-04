@@ -57,6 +57,7 @@ class AppFixtures extends Fixture
         $testUser = new Employer();
         $testUser->setFirstname('Test')
                 ->setLastname('User')
+                ->setPhoneNumber('0123456789')
                 ->setCompanyName('Compagnie de test')
                 ->setEmail('test-ci@test.com')
                 ->setRole($userRole);
@@ -70,6 +71,7 @@ class AppFixtures extends Fixture
         $password = $this->hasher->hashPassword($testCandidate,'SuperPassWord456');
         $testCandidate->setFirstname('Candidat')
                     ->setLastname('Test Candidat')
+                    ->setPhoneNumber('0698745121')
                     ->setEmail('test-c@test.com')
                     ->setRole($userRole)
                     ->setPassword($password);
