@@ -46,6 +46,7 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/home, roles: ROLE_USER }
+        - { path: ^/webhook/stripe, roles: PUBLIC_ACCESS } # Autorise Stripe à appeler cette route
 
 when@test:
     security:

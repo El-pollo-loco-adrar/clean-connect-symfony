@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use function PHPUnit\Framework\returnArgument;
+use App\Service\StripeService;
 
 final class AddMissionController extends AbstractController
 {
@@ -23,11 +24,22 @@ final class AddMissionController extends AbstractController
     }
 
     #[Route('/create/mission', name: 'app_mission_create', methods:['GET','POST'])]
-    public function createMission(Request $request): Response
+    public function createMission(Request $request, StripeService $stripeService): Response
     {
+        /** @var Employer $user */
+        $user = $this->getUser();
+
         //Sécurité de la route
-        if (!$this->getUser() instanceof Employer) {
+        if (!$user instanceof Employer) {
             throw $this->createAccessDeniedException('Interdit si vous n\'êtes pas employeur.');
+        }
+
+        // Vérification que l'abonnement est bien actif
+        $this->em->refresh($user);
+        if($user->getSubscriptionStatus() !== 'active') {
+            $this->addFlash('warning', '⚠️ Votre abonnement est inactif. Vous devez être abonné pour publier une nouvelle mission.');
+
+            return $this->redirectToRoute('app_employer_purchases');
         }
         
         //Création de l'objet mission
@@ -80,15 +92,27 @@ final class AddMissionController extends AbstractController
 
             $this->em->persist($mission);
             $this->em->flush();
+            
+            $this->em->refresh($user);
+
+            // --- AJOUT DE LA FACTURATION À L'USAGE ---
+            if ($user->getStripeSubscriptionId()) {
+                try {
+                    // On informe Stripe qu'une unité supplémentaire doit être facturée
+                    $stripeService->incrementMissionUsage($user->getStripeSubscriptionId());
+                } catch (\Exception $e){
+                    dd("Erreur stripe :" . $e->getMessage());
+                }
+
+            } else {
+                //dump($form->getErrors(true, true));
+                dd("L'ID Stripe est vide en base de données pour cet utilisateur.");
+            }
 
             //Redirection
             $this->addFlash('success', 'Mission créée avec succès ✅');
             return $this->redirectToRoute('app_show_mission');
-        } else {
-            dump($form->getErrors(true, true));
         }
-
-        
         
         $message = '';
         if(isset($_GET['message']) && !empty($_GET['message'])){
@@ -104,6 +128,7 @@ final class AddMissionController extends AbstractController
             'categories' => $categories,
         ]);
     }
+    
 
     #[Route('/mission/delete/{id}', name: 'app_mission_delete', methods: ['POST'])]
     public function delete(Request $request, Mission $mission, EntityManagerInterface $em): Response
@@ -117,4 +142,5 @@ final class AddMissionController extends AbstractController
 
         return $this->redirectToRoute('app_show_mission');
     }
+
 }

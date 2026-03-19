@@ -31,6 +31,15 @@ class Employer extends User
     #[ORM\OneToMany(targetEntity: Conversation::class, mappedBy: 'employer')]
     private Collection $employer;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripeCustomerId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripeSubscriptionId = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $subscriptionStatus = null;
+
     public function __construct()
     {
         $this->missions = new ArrayCollection();
@@ -116,5 +125,47 @@ class Employer extends User
     public function __toString()
     {
         return $this->getCompanyName() ?? 'Entreprise inconnue';
+    }
+
+    public function getStripeCustomerId(): ?string
+    {
+        return $this->stripeCustomerId;
+    }
+
+    public function setStripeCustomerId(?string $stripeCustomerId): static
+    {
+        $this->stripeCustomerId = $stripeCustomerId;
+
+        return $this;
+    }
+
+    public function getStripeSubscriptionId(): ?string
+    {
+        return $this->stripeSubscriptionId;
+    }
+
+    public function setStripeSubscriptionId(?string $stripeSubscriptionId): static
+    {
+        $this->stripeSubscriptionId = $stripeSubscriptionId;
+
+        return $this;
+    }
+
+    public function getSubscriptionStatus(): ?string
+    {
+        return $this->subscriptionStatus;
+    }
+
+    public function setSubscriptionStatus(?string $subscriptionStatus): static
+    {
+        $this->subscriptionStatus = $subscriptionStatus;
+
+        return $this;
+    }
+
+    // Fonction pour simplifier les futurs contrôleurs
+    public function hasActiveSubscription(): bool
+    {
+        return $this->subscriptionStatus === 'active';
     }
 }

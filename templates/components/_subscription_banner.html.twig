@@ -1,0 +1,20 @@
+{# Bandeau pour dire à l'employeur qu'il n'a pas d'abonnement actif #}
+
+{% if app.user and app.user.subscriptionStatus is defined and app.user.subscriptionStatus != 'active' %}
+    <div class="bg-amber-100 border-b-2 border-black py-3 px-4 shadow-md relative z-40">
+        <div class="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center">
+                <p class="font-bold text-amber-900">
+                    <span class="md:hidden">Abonnement inactif !</span>
+                    <span class="hidden md:inline">Votre abonnement est inactif. Vous ne pouvez pas publier de nouvelles missions.</span>
+                </p>
+            </div>
+            <div class="flex-shrink-0 w-full sm:w-auto">
+                <a href="{{ path('app_employer_purchases') }}" 
+                    class="flex items-center justify-center px-4 py-2 border border-black rounded-[4px] bg-white text-sm font-bold text-black hover:bg-gray-50 transition-all uppercase no-underline">
+                    Régulariser
+                </a>
+            </div>
+        </div>
+    </div>
+{% endif %}

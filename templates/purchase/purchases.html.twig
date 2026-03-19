@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Abonnement - Recruteur{% endblock %}
+
+{% block body %}
+    <div class="flex items-center justify-center min-h-[80vh] dark:bg-gray-900 py-10 transition-colors">
+        <div class="w-full max-w-md mx-4 bg-[#F3F4F6] shadow-xl border-2 border-black dark:border-gray-700 rounded-2xl p-8">
+
+            <h1 class="text-2xl font-bold text-center text-gray-800 uppercase tracking-wide">Mon abonnement</h1>
+            <hr class="border-t-2 border-black my-6 mx-auto w-1/2" />
+
+            <div class="space-y-8">
+                {# Section Infos Statut #}
+                <div class="flex items-center space-x-4">
+                    
+                    <div>
+                        <p class="text-sm font-semibold uppercase text-gray-500">Statut actuel</p>
+                        {% if employer.subscriptionStatus == 'active' %}
+                            <p class="text-xl font-bold text-green-600 flex items-center">
+                                <span class="w-3 h-3 bg-green-600 rounded-full animate-pulse mr-2"></span>
+                                Actif
+                            </p>
+                        {% else %}
+                            <p class="text-xl font-bold text-red-500">Inactif</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# Section Détails de l'offre #}
+                <div class="bg-white border-2 border-black p-4 rounded-xl">
+                    <p class="text-sm text-gray-600">Accès illimité aux publications de missions et gestion des candidatures.</p>
+                    <p class="mt-2 font-bold text-2xl">5€ <span class="text-sm font-normal text-gray-500">/ mois</span></p>
+                </div>
+
+                {# Section Action Bouton #}
+                <div class="flex justify-center pt-4">
+                    {% if employer.subscriptionStatus == 'active' %}
+                        <a href="{{ path('app_subscription_portal') }}" 
+                            class="bg-[#2563EBCC] w-fit px-6 py-3 text-white border-2 border-black rounded-[4px] font-bold shadow-lg hover:scale-105 transition-transform">
+                            <i class="fas fa-file-invoice mr-2"></i> GÉRER MES FACTURES
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_subscription_subscribe') }}"
+                            class="bg-[#2563EBCC] hover:bg-[#2563EB] w-full text-center px-6 py-4 text-white border-2 border-black rounded-[4px] font-bold hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all no-underline">
+                            S'ABONNER MAINTENANT
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <p class="text-[10px] text-center text-gray-400 italic">Paiement sécurisé via Stripe. Annulation possible à tout moment.</p>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

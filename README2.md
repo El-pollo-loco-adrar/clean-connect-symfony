@@ -59,6 +59,9 @@ DATABASE_URL="mysql://root:@127.0.0.1:3306/votre_bdd?serverVersion=8.0.32&charse
 # Créer la base de données
 php bin/console doctrine:database:create
 
+# Créer fichier de migration
+php bin/console make:migration
+
 # Appliquer les migrations
 php bin/console doctrine:migrations:migrate --no-interaction
 
