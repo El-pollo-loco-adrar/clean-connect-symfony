@@ -15,6 +15,7 @@ desktop.ini
 /public/build
 /var/
 /vendor/
+.env
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
