@@ -43,6 +43,18 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: none
 
+      - name: Creation temporaire d'un fichier .env
+        run: |
+          echo "APP_ENV=test" > .env
+          echo "APP_SECRET=67d3b0c95805e254e4277b902e1c9d82" >> .env
+          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0" >> .env
+          # Ajoute tes clés Stripe ici aussi (même si elles sont fausses, il en faut pour que le service compile)
+          echo "STRIPE_PUBLIC_KEY=pk_test_fake" >> .env
+          echo "STRIPE_SECRET_KEY=sk_test_fake" >> .env
+          echo "STRIPE_WEBHOOK_SECRET=whsec_fake" >> .env
+          echo "STRIPE_PRICE_FIXED=price_fake" >> .env
+          echo "STRIPE_PRICE_METERED=price_fake" >> .env
+
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress
 
@@ -53,14 +65,14 @@ jobs:
             sleep 2
           done
 
-      - name: Force Environment Variables for Web Server
-        run: |
-          echo 'APP_ENV=test' > .env.local
-          echo 'APP_DEBUG=1' >> .env.local
-          echo 'APP_SECRET=67d3b0c95805e254e4277b902e1c9d82' >> .env.local
-          echo 'DATABASE_URL="mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0"' >> .env.local
-          echo 'MESSENGER_TRANSPORT_DSN="in-memory://"' >> .env.local
-          echo 'MAILER_DSN="null://null"' >> .env.local
+      # - name: Force Environment Variables for Web Server
+      #   run: |
+      #     echo 'APP_ENV=test' > .env.local
+      #     echo 'APP_DEBUG=1' >> .env.local
+      #     echo 'APP_SECRET=67d3b0c95805e254e4277b902e1c9d82' >> .env.local
+      #     echo 'DATABASE_URL="mysql://root:root@127.0.0.1:3306/symfony_test?serverVersion=8.0"' >> .env.local
+      #     echo 'MESSENGER_TRANSPORT_DSN="in-memory://"' >> .env.local
+      #     echo 'MAILER_DSN="null://null"' >> .env.local
 
       - name: Prepare Database
         run: |
