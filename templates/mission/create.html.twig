@@ -226,35 +226,36 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        /* Force la réduction du conteneur global du menu */
-        div.ts-dropdown {
-            height: auto !important;
-            min-height: 0 !important;
+        /* Force la taille max du dropdown */
+        .ts-dropdown {
             max-height: 200px !important;
+            overflow-y: auto !important;
         }
 
-        /* Force la réduction de la zone de contenu */
-        div.ts-dropdown .ts-dropdown-content {
+        /* Zone interne */
+        .ts-dropdown .ts-dropdown-content {
             padding: 0 !important;
-            height: auto !important;
         }
 
-        /* Cible TOUS les messages (loading, no-results, etc.) */
-        div.ts-dropdown .loading, 
-        div.ts-dropdown .no-results,
-        div.ts-dropdown .create,
-        div.ts-dropdown .optgroup-header {
-            padding: 4px 8px !important; /* Très petit padding */
-            margin: 0 !important;
-            line-height: 1.2 !important;
-            min-height: 20px !important; /* Écrase les 40px par défaut */
-            height: auto !important;
+        /* 🔥 FIX PRINCIPAL : toutes les options */
+        .ts-dropdown .option {
+            padding: 4px 8px !important;
             font-size: 12px !important;
+            line-height: 1.2 !important;
+            min-height: 0 !important;
+            height: auto !important;
         }
 
-        /* Ajuste la taille de l'input de recherche quand on tape */
-        .ts-wrapper.multi .ts-control > div, 
-        .ts-wrapper.single .ts-control > div {
+        /* Messages (loading, no-results) */
+        .ts-dropdown .loading, 
+        .ts-dropdown .no-results {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+            min-height: 0 !important;
+        }
+
+        /* Input */
+        .ts-control input {
             padding: 2px !important;
         }
     </style>

@@ -17,11 +17,16 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class ChatController extends AbstractController
 {
+    public function __construct(
+        private ConversationRepository $convRepo
+    )
+    {
+    }
     /**
      * Fonction qui permet à un candidat de voir la liste de ses discussions
      */
     #[Route('/mes-discussions', name: 'app_candidate_conversations')]
-    public function myConversations(ConversationRepository $convRepo)
+    public function myConversations()
     {
         $user = $this->getUser();
 
@@ -32,7 +37,7 @@ final class ChatController extends AbstractController
         }
 
         // On récupère toutes les conversations où l'utilisateur est le candidat
-        $conversations = $convRepo->findLastMessage($user);
+        $conversations = $this->convRepo->findLastMessage($user);
 
         return $this->render('chat/candidate_list.html.twig', [
             'conversations' => $conversations,
@@ -43,7 +48,7 @@ final class ChatController extends AbstractController
      * Fonction qui permet à un employeur de voir la liste de ses discussions
      */
     #[Route('/mes-discussions-employeur', name: 'app_employer_conversations')]
-    public function employerConversation(ConversationRepository $convRepo)
+    public function employerConversation()
     {
         $user = $this->getUser();
 
@@ -54,7 +59,7 @@ final class ChatController extends AbstractController
         }
 
         // On récupère toutes les conversations où l'utilisateur est l'employeur
-        $conversations = $convRepo->findLastMessage($user);
+        $conversations = $this->convRepo->findLastMessage($user);
 
         return $this->render('chat/employer_list.html.twig', [
             'conversations' => $conversations,
@@ -65,7 +70,7 @@ final class ChatController extends AbstractController
      * Fonction qui permet de postuler et de créer une nouvelle conversation
      */
     #[Route('/postuler/{id}', name: 'app_mission_postuler')]
-    public function postuler(Mission $mission, ConversationRepository $convRepo, EntityManagerInterface $em): Response
+    public function postuler(Mission $mission, EntityManagerInterface $em): Response
     {
         //1. On récupère le candidat connecté
         $user = $this->getUser();
@@ -79,7 +84,7 @@ final class ChatController extends AbstractController
 
         $employer = $mission->getEmployer();
         //2. On vérifie si une conversation existe déjà entre le candidat et la mission choisie
-        $conversation = $convRepo->findOneBy([
+        $conversation = $this->convRepo->findOneBy([
             'mission' => $mission,
             'candidate' => $user
         ]);

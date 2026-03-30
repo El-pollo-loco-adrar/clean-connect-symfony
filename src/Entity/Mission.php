@@ -39,13 +39,13 @@ class Mission
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Assert\GreaterThanOrEqual("today", message: "La date ne peut pas être dans le passé.")]
+    #[Assert\GreaterThanOrEqual("today", message: "La date est déjà passée.")]
     private ?\DateTimeImmutable $startAt = null;
 
     #[ORM\Column]
     #[Assert\Expression(
         "this.getEndAt() > this.getStartAt()",
-        message: "La date de fin doit être après la date de début."
+        message: "La fin doit être après le début."
     )]
     private ?\DateTimeImmutable $endAt = null;
 
@@ -64,6 +64,7 @@ class Mission
     private ?WageScale $wageScale = null;
 
     #[ORM\ManyToOne(inversedBy: 'missions')]
+    #[Assert\NotBlank(message:"Le lieu d'intervention est obligatoire.")]
     private ?InterventionArea $areaLocation = null;
 
     #[ORM\ManyToOne(inversedBy: 'missions')]
@@ -73,16 +74,10 @@ class Mission
     #[ORM\JoinTable(name:'mission_skills')]
     private Collection $skills;
 
-    /**
-     * @var Collection<int, Conversation>
-     */
-    #[ORM\OneToMany(targetEntity: Conversation::class, mappedBy: 'mission')]
-    private Collection $mission;
 
     public function __construct()
     {
         $this->skills = new ArrayCollection();
-        $this->mission = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -207,38 +202,12 @@ class Mission
         return $this;
     }
 
-    /**
-     * @return Collection<int, Conversation>
-     */
-    public function getMission(): Collection
-    {
-        return $this->mission;
-    }
 
-    public function addMission(Conversation $mission): static
-    {
-        if (!$this->mission->contains($mission)) {
-            $this->mission->add($mission);
-            $mission->setMission($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMission(Conversation $mission): static
-    {
-        if ($this->mission->removeElement($mission)) {
-            // set the owning side to null (unless already changed)
-            if ($mission->getMission() === $this) {
-                $mission->setMission(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function __toString()
     {
         return $this->title ?? 'Mission sans titre';
     }
+
+
 }

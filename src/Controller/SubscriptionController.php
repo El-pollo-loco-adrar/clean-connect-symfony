@@ -24,7 +24,6 @@ final class SubscriptionController extends AbstractController
 
         // On récupère l'ID du prix fixe (5€) défini dans services.yaml
         $fixedPriceId = $this->getParameter('stripe_price_fixed');
-        $meteredPriceId = $this->getParameter('stripe_price_metered');
 
         // On génère les URLs de retour absolues
         $successUrl = $this->generateUrl('app_subscription_success', [], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -34,7 +33,6 @@ final class SubscriptionController extends AbstractController
         $checkoutUrl = $stripeService->createCheckoutSession(
             $user,
             $fixedPriceId,
-            $meteredPriceId,
             $successUrl,
             $cancelUrl
             );
@@ -56,7 +54,7 @@ final class SubscriptionController extends AbstractController
         return $this->redirectToRoute('app_home');
     }
 
-    #[Route('employer/portal', 'app_subscription_portal')]
+    #[Route('/employer/portal', 'app_subscription_portal')]
     public function customerPortal(StripeService $stripeService): Response
     {
         /** @var Employer $user */

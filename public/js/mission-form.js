@@ -84,7 +84,7 @@ function initMissionForm(config) {
             }
 
             if (endVal <= startVal) {
-                toggleError(endAtInput, "La fin doit être après le début.");
+                toggleError(endAtInput, "La date de fin doit être après la date de début.");
                 isValid = false;
             } else {
                 toggleError(endAtInput, null);
@@ -123,7 +123,7 @@ function initMissionForm(config) {
                 const s = validateSalary();
 
                 if (!t || !d || !dt || !tc || !s) {
-                    e.preventDefault();
+                    e.preventDefault(); //Empêche l'envoie au serveur
                     e.stopPropagation(); // Empêche d'autres scripts de prendre le focus
                     
                     const firstError = document.querySelector('.error-msg:not(:empty)');
@@ -206,19 +206,33 @@ function initMissionForm(config) {
                 create: true,
                 render: {
                     loading: function(data, escape) {
-                        // Ici tu peux mettre un spinner plus petit en HTML
-                        return '<div class="py-2 text-center text-xs text-gray-500 italic">Recherche en cours...</div>';
+                        // Loader compact avec spinner (remplace le bloc trop gros)
+                        return `
+                            <div class="flex items-center justify-center gap-2 py-1 text-xs text-gray-500">
+                                <svg class="animate-spin h-3 w-3 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                                </svg>
+                                <span>Recherche...</span>
+                            </div>
+                        `;
                     },
                     no_results: function(data, escape) {
-                        return '<div class="py-2 text-center text-xs text-red-500">Aucun lieu trouvé</div>';
+                        return '<div class="py-1 text-center text-xs text-red-500">Aucun lieu trouvé</div>';
                     }
                 },
                 load: (q, c) => {
-                    if(!q.length) return c();
-                    fetch('/api/cities?q='+encodeURIComponent(q))
-                    .then(r=>r.json())
-                    .then(j=>c(j))
-                    .catch(()=>c());
+                    // On évite les appels inutiles (UX + perf)
+                    if (q.length < 2) return c();
+
+                    // Debounce pour éviter de spam l’API
+                    clearTimeout(areaEl._timeout);
+                    areaEl._timeout = setTimeout(() => {
+                        fetch('/api/cities?q=' + encodeURIComponent(q))
+                        .then(r => r.json())
+                        .then(j => c(j))
+                        .catch(() => c());
+                    }, 300);
                 }
             });
         }

@@ -41,9 +41,9 @@ class StripeService
     }
 
     /**
-     * Génère un lien vers le tunnel de paiement (Checkout)
+     * Génère un lien vers Checkout pour un abonnement simple
      */
-    public function createCheckoutSession(Employer $employer, string $fixedPriceId, string $meteredPriceId, string $successUrl, string $cancelUrl): string
+    public function createCheckoutSession(Employer $employer, string $fixedPriceId, string $successUrl, string $cancelUrl): string
     {
         $customerId = $this->createStripeCustomer($employer);
 
@@ -55,9 +55,6 @@ class StripeService
                     'price' => $fixedPriceId,
                     'quantity' => 1,// C'est l'ID du produit à 5€/mois créé sur Stripe
                 ],
-                [
-                    'price' => $meteredPriceId,
-                ]
             ],
             'mode' => 'subscription',
             'success_url' => $successUrl,
@@ -67,6 +64,9 @@ class StripeService
         return $session->url;
     }
 
+    /**
+     * Permet au client de gérer son abonnement (annuler, changer de carte)
+     */
     public function createCustomerPortalSession(Employer $employer, string $returnUrl): string
     {
         $session = $this->stripe->billingPortal->sessions->create([
@@ -75,38 +75,5 @@ class StripeService
         ]);
 
         return $session->url;
-    }
-
-    public function incrementMissionUsage($subscriptionId): void
-    {
-        //! 1. Récupérer l'abonnement pour trouver l'ID de la ligne correspondante au prix "par mission"
-        $subscription = $this->stripe->subscriptions->retrieve($subscriptionId);
-
-        // On cherche l'item qui n'est pas le forfait fixe (ou on prend le deuxième item)
-        // Ici, on part du principe que le prix à l'usage est le deuxième item de l'abonnement
-        $usageItem = null;
-        foreach ($subscription->items->data as $item) {
-            dump($item->price->recurring->usage_type);
-
-            if (isset($item->price->recurring) && $item->price->recurring->usage_type === 'metered') {
-                $usageItem = $item;
-                break;
-            }
-        }
-
-        if ($usageItem) {
-            //! 2. Créer un rapport d'utilisation
-            $this->stripe->subscriptionItems->createUsageRecord(
-                $usageItem->id,
-                [
-                    'quantity' => 1,
-                    'timestamp' => time(),
-                    'action' => 'increment',
-                ]
-            );
-            dump("SUCCESS : Envoi à Stripe réussi !"); die();
-            } else {
-                //dump("ERREUR : Aucun item 'metered' trouvé dans l'abonnement " . $subscriptionId); die();
-                }
     }
 }

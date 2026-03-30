@@ -12,27 +12,32 @@ class TownToString implements DataTransformerInterface
 
     // De l'objet vers le texte (affichage)
     public function transform($area): string {
-        if (null === $area) return '';
+        if (null === $area){
+            return '';
+        }
         return $area->getPostalCode() . ' - ' . $area->getCity();
     }
 
     // du texte vers l'objet (soumission)
     public function reverseTransform($value): ?InterventionArea {
-        if (!$value) return null;
+        if (!$value) {
+            return null;
+        }
 
         // On sépare "31000 - Toulouse"
         $parts = explode(' - ', $value);
         $cp = trim($parts[0]);
         $city = isset($parts[1]) ? trim($parts[1]) : 'Ville inconnue';
 
-        // 1. On cherche si ça existe déjà
+        // 1. On cherche si ça existe déjà en bdd
         $area = $this->entityManager->getRepository(InterventionArea::class)->findOneBy([
             'postalCode' => $cp,
             'city' => $city
         ]);
 
-        if ($area) return $area;
-
+        if ($area) {
+            return $area;
+        }
         // 2. Si ça n'existe pas, on crée le nouveau lieu
         $newArea = new InterventionArea();
         $newArea->setPostalCode($cp);

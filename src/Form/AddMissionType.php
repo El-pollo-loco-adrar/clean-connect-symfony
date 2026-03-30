@@ -92,7 +92,7 @@ class AddMissionType extends AbstractType
                 'choice_label' => function(WageScale $wage) {
                     return 'Niveau ' . $wage->getNiveau() . ' -  ' . $wage->getLevel() . ' (' . $wage->getHourlyRate() . '€/h)';
                 },
-                'placeholder' => 'Salaire ',
+                'placeholder' => 'Sélectionner un Salaire',
                 'label' => 'Salaire : ',
                 'attr' => [
                     'class' => 'w-full rounded-md border-gray-300 shadow-sm'

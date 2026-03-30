@@ -24,7 +24,7 @@ final class AddMissionController extends AbstractController
     }
 
     #[Route('/create/mission', name: 'app_mission_create', methods:['GET','POST'])]
-    public function createMission(Request $request, StripeService $stripeService): Response
+    public function createMission(Request $request): Response
     {
         /** @var Employer $user */
         $user = $this->getUser();
@@ -92,22 +92,6 @@ final class AddMissionController extends AbstractController
 
             $this->em->persist($mission);
             $this->em->flush();
-            
-            $this->em->refresh($user);
-
-            // --- AJOUT DE LA FACTURATION À L'USAGE ---
-            if ($user->getStripeSubscriptionId()) {
-                try {
-                    // On informe Stripe qu'une unité supplémentaire doit être facturée
-                    $stripeService->incrementMissionUsage($user->getStripeSubscriptionId());
-                } catch (\Exception $e){
-                    dd("Erreur stripe :" . $e->getMessage());
-                }
-
-            } else {
-                //dump($form->getErrors(true, true));
-                dd("L'ID Stripe est vide en base de données pour cet utilisateur.");
-            }
 
             //Redirection
             $this->addFlash('success', 'Mission créée avec succès ✅');

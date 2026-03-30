@@ -45,7 +45,7 @@ stripe listen --forward-to localhost:8000/webhook/stripe
 ```bash
 stripe trigger checkout.session.completed
 ```
-
+* ne pas oublier d'ouvrir le serveur symfony serve
 
 ## 📝 Services et Contrôleurs
 

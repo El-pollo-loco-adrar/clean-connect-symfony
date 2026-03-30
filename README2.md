@@ -46,6 +46,9 @@ npm install
 
 # Installer Tailwind
 php bin/console tailwind:build    
+
+#Installer la dépencdance sanitizer
+composer require symfony/html-sanitizer
 ```
 
 ### 2. Configuration de l'environnement
