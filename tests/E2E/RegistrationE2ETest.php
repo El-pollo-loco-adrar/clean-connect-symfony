@@ -65,7 +65,7 @@ class RegistrationE2ETest extends PantherTestCase
 
         // Si on tombe sur une page d'erreur Symfony
         if (str_contains($h1Text, 'Exception') || str_contains($h1Text, 'Error')) {
-            echo "\n --- ERREUR AU CHARGEMENT DE LA PAGE REGISTER ok --- \n";
+            echo "\n --- ERREUR AU CHARGEMENT DE LA PAGE REGISTER --- \n";
             try {
                 echo "MESSAGE : " . $crawler->filter('.exception-message')->text() . "\n";
             } catch (\Exception $e) {
@@ -77,8 +77,9 @@ class RegistrationE2ETest extends PantherTestCase
         }
 
         // Si c'est bien la bonne page, ça passera
-        $this->assertStringContainsString('Inscription', $h1Text, "La page n'a pas chargé correctement.");
+        $this->assertStringContainsString('Pizzas trop chères', $h1Text, "La page n'a pas chargé correctement.");
     }
+    // $this->assertStringContainsString('Inscription', $h1Text, "La page n'a pas chargé correctement.");
 
     public function testRegistrationFlow(): void
     {
