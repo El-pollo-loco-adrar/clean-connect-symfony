@@ -77,9 +77,9 @@ class RegistrationE2ETest extends PantherTestCase
         }
 
         // Si c'est bien la bonne page, ça passera
-        $this->assertStringContainsString('Pizzas trop chères', $h1Text, "La page n'a pas chargé correctement.");
+        $this->assertStringContainsString('Inscription', $h1Text, "La page n'a pas chargé correctement.");
     }
-    // $this->assertStringContainsString('Inscription', $h1Text, "La page n'a pas chargé correctement.");
+    
 
     public function testRegistrationFlow(): void
     {
