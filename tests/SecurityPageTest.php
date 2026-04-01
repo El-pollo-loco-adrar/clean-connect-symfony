@@ -13,7 +13,7 @@ class SecurityPageTest extends WebTestCase
     public function testLoginEmployerSuccess(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/');
+        $client->request('GET', '/');
 
         // 1. On remplit et soumet le formulaire
         $client->submitForm('Se connecter', [
@@ -36,7 +36,7 @@ class SecurityPageTest extends WebTestCase
     public function testLoginCandidateSuccess(): void
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/');
+        $client->request('GET', '/');
 
         // 1. On remplit le formulaire
         $client->submitForm('Se connecter', [

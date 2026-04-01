@@ -15,7 +15,7 @@ class RegistrationE2ETest extends PantherTestCase
         $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
 
         if ($isWindows) {
-            // Config pour ton PC Windows (Chrome)
+            // Config pour PC Windows (Chrome)
             $chromeDriverBinary = realpath(__DIR__ . '/../../drivers/chromedriver.exe');
             return Client::createChromeClient($chromeDriverBinary, null, [
                 'external_base_uri' => 'http://127.0.0.1:8000',
@@ -32,7 +32,7 @@ class RegistrationE2ETest extends PantherTestCase
             ]);
         }
 
-        // Config pour ton PC Linux Debian ou GitHub Actions (Firefox)
+        // Config pour PC Linux Debian ou GitHub Actions (Firefox)
         // On laisse null car geckodriver est dans /usr/local/bin
         return Client::createFirefoxClient(null, null, [
             'external_base_uri' => 'http://127.0.0.1:8000',
@@ -40,26 +40,24 @@ class RegistrationE2ETest extends PantherTestCase
         ]);
     }
 
-    // public function testRegistrationWithBrowser(): void
-    // {
-    //     $client = $this->createCustomClient();
-
-    //     $client->request('GET', 'http://127.0.0.1:8000/register');
-
-    //     $crawler = $client->waitFor('h1');
-    //     $h1Text = $crawler->filter('h1')->text();
-
-    //     $this->assertStringContainsString('Inscription', $h1Text);
-        
-    //     echo "\n Succès ! Le titre trouvé est : " . $h1Text . "\n";
-    // }
-
     public function testRegistrationWithBrowser(): void
     {
         $client = $this->createCustomClient();
 
-        $crawler = $client->request('GET', 'http://127.0.0.1:8000/register');
+        try{
+            $crawler = $client->request('GET', 'http://127.0.0.1:8000/register');
 
+        }catch(\Exception $e){
+            echo "\n --- IMPOSSIBLE DE CONTACTER LE SERVEUR --- \n";
+        echo "ERREUR : " . $e->getMessage() . "\n";
+        
+        // On prend quand même un screenshot (souvent une page blanche Chrome)
+        $client->takeScreenshot(getcwd() . '/error_connection_failed.png');
+        
+        // On relance l'erreur pour que PHPUnit marque le test en rouge
+        throw $e;
+        }
+        
         // On vérifie tout de suite si on a un H1, même si c'est une erreur
         $h1Text = $crawler->filter('h1')->count() > 0 ? $crawler->filter('h1')->text() : 'Pas de H1';
 
@@ -80,7 +78,6 @@ class RegistrationE2ETest extends PantherTestCase
         $this->assertStringContainsString('Inscription', $h1Text, "La page n'a pas chargé correctement.");
     }
     
-
     public function testRegistrationFlow(): void
     {
         $client = $this->createCustomClient();
@@ -110,7 +107,7 @@ class RegistrationE2ETest extends PantherTestCase
             echo "\n --- !!! ERREUR SYMFONY DETECTEE !!! --- \n";
             echo "TITRE H1 : " . $h1Text . "\n";
             try {
-                // On essaie de choper le message d'erreur spécifique dans la div de debug de Symfony
+                // On attrape le message d'erreur spécifique dans la div de debug de Symfony
                 $errorMsg = $crawler->filter('.exception-message')->count() ? $crawler->filter('.exception-message')->text() : 'Message non trouvé';
                 echo "MESSAGE D'ERREUR : " . $errorMsg . "\n";
             } catch (\Exception $e) {
@@ -126,4 +123,18 @@ class RegistrationE2ETest extends PantherTestCase
 
         $this->assertTrue($isHome || $isLogin, "Echec : Le navigateur est sur la page '$h1Text' au lieu de la Home/Login.");
     }
+
+        // public function testRegistrationWithBrowser(): void
+    // {
+    //     $client = $this->createCustomClient();
+
+    //     $client->request('GET', 'http://127.0.0.1:8000/register');
+
+    //     $crawler = $client->waitFor('h1');
+    //     $h1Text = $crawler->filter('h1')->text();
+
+    //     $this->assertStringContainsString('Inscription', $h1Text);
+        
+    //     echo "\n Succès ! Le titre trouvé est : " . $h1Text . "\n";
+    // }
 }
