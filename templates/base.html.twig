@@ -1,9 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+
+        <meta name="description" content="{% block metadescription %}Clean Connect : Trouvez les meilleures missions de nettoyage ou recrutez des agents qualifiés en quelques clics.{% endblock %}">
+        <title>{% block title %}Clean Connect - Plateforme de mise en relation{% endblock %}</title>
+
+        {# Pour éviter que Google indexe les pages de test/admin par erreur #}
+        {% block robots %}
+            <meta name="robots" content="index, follow">
+        {% endblock %}
+
+        {# Canonical URL (évite le contenu dupliqué) #}
+        <link rel="canonical" href="{{ app.request.uri }}">
 
         <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
@@ -15,11 +25,15 @@
         {% endblock %}
     </head>
     <body>
+        <header>
+            {% include "components/_navbar.html.twig" %}
+            {% include "components/_subscription_banner.html.twig" %}
+        </header>
         {# --- BANDEAU ALERTE ABONNEMENT --- #}
-        {% include "components/_subscription_banner.html.twig" %}
+        {# {% include "components/_subscription_banner.html.twig" %} #}
 
         {# --- INSERTION DU COMPOSANT NAVBAR --- #}
-        {% include "components/_navbar.html.twig" %}
+        {# {% include "components/_navbar.html.twig" %} #}
         
         {# --- SECTION FLASH MESSAGES --- #}
         <div class="fixed top-5 right-5 z-50 flex flex-col gap-3 w-80">
@@ -41,13 +55,17 @@
         </div>
         {# ------------------------------ #}
 
-
-        {% block body %}
-            <div id="app"></div>
-        {% endblock %}
-
+        <main id="main-content">
+            {% block body %}
+                <div id="app"></div>
+            {% endblock %}
+        </main>
+        
+        <footer>
+            {% include "components/_footer.html.twig" %}
+        </footer>
         {# --- INSERTION DU FOOTER --- #}
-        {% include "components/_footer.html.twig" %}
+        
 
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }} {#JS GLOBAL#}

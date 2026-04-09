@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 
 final class ChatController extends AbstractController
 {
@@ -112,7 +113,11 @@ final class ChatController extends AbstractController
      * Fonction pour voir une discussion précise
      */
     #[Route('/chat/{id}', name: 'app_chat_view')]
-    public function viewChat(Conversation $conversation, Request $request, EntityManagerInterface $em)
+    public function viewChat(
+        Conversation $conversation,
+        Request $request,
+        EntityManagerInterface $em,
+        HtmlSanitizerInterface $appDefaultSanitizer)
     {
         //Sécurité : Le user fait il partie de la conversation?
         if($this->getUser() !== $conversation->getCandidate() && $this->getUser() !== $conversation->getEmployer())
@@ -133,6 +138,11 @@ final class ChatController extends AbstractController
             $form->handleRequest($request);
 
             if($form->isSubmitted() && $form->isValid()) {
+                // SECURITE XSS
+                $rawContent = $message->getContent();
+                $safeContent = $appDefaultSanitizer->sanitize($rawContent);
+                $message->setContent($safeContent);
+
                 $message->setAuthor($this->getUser());
                 $message->setConversation($conversation);
                 $message->setCreatedAt(new \DateTimeImmutable());

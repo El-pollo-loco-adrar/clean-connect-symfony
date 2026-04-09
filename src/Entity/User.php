@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Controller\Admin\EmployerCrudController;
 use App\Entity\Candidate;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -36,9 +37,19 @@ class User implements \Symfony\Component\Security\Core\User\UserInterface,
     private ?string $password = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max:100)]
+    #[Assert\Regex(
+        pattern:"/^[a-zA-Zàâäéèêëîïôöùûüç\- ]+$/u",
+        message:"Le nom ne peut contenir que des lettres, des tirets et des espaces."
+    )]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100)]
+#[Assert\Regex(
+    pattern: "/^[a-zA-Zàâäéèêëîïôöùûüç\- ]+$/u",
+    message: "Le nom ne peut contenir que des lettres, des tirets et des espaces."
+)]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 20, unique: true, nullable: true)]

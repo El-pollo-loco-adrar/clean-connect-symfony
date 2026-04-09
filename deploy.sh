@@ -10,13 +10,13 @@ git pull origin main
 composer install --no-dev --optimize-autoloader
 
 # 3. Mise à jour de la BDD
-bin/console doctrine:migrations:migrate --no-interaction
+php bin/console doctrine:migrations:migrate --no-interaction
 
 # 4. Nettoyage du cache
-bin/prod cache:clear --env=prod
-bin/prod cache:warmup --env=prod
+php bin/prod cache:clear --env=prod
+phhp bin/prod cache:warmup --env=prod
 
 # 5. Compilation des assets
-bin/console asset-map:compile
+php bin/console asset-map:compile
 
 echo "--- Déploiement terminée avec succès ---"
